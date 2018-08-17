@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>角色列表</title>
+    <style>
+        *{padding:0; margin:0; font-family: Consolas, "Liberation Mono", Courier, "微软雅黑"; font-size:14px;}
+        .menu_set_item { width: 200px; height: auto; border:1px Solid #CCCCCC; background:#FFFFFF; border-radius: 5px; margin:4px; transition: all 0.4s ease-in-out;}
+        .menu_set_item:hover{ transform: scale(1.2,1.2); z-index:999; box-shadow: #999 2px 2px 9px; }
+        .menu_set_item .menu_title { height:38px; line-height: 38px; font-size: 14px; box-sizing: border-box; padding-left: 30px; background:#D9D9D9; position:relative;}
+        .menu_set_item .menu_item { height:28px; line-height: 28px; box-sizing: border-box; padding-left:30px; font-size: 14px; color:#666666; cursor:pointer; position:relative; }
+        .menu_set_item .menu_item:hover { color:#333333; }
+        .flex_content { display: flex; flex-direction: row; flex-wrap: wrap; }
+        .api_set_item { width: 200px; height: auto; border:1px Solid #CCCCCC; background:#FFFFFF; border-radius: 5px; margin:4px; transition: all 0.4s ease-in-out;}
+        .api_set_item:hover{ transform: scale(1.2,1.2); z-index:999; box-shadow: #999 2px 2px 9px; }
+        .api_set_item .menu_title { height:38px; line-height: 38px; font-size: 14px; box-sizing: border-box; padding-left: 30px; background:#D9D9D9; position:relative;}
+        .api_set_item .menu_item { height:28px; line-height: 28px; box-sizing: border-box; padding-left:30px; font-size: 14px; color:#666666; cursor:pointer; position:relative; }
+        .api_set_item .menu_item:hover { color:#333333; }
+    </style>
+    <link rel="stylesheet" href="__PUBLIC__css/global.css" rel='stylesheet' type='text/css'>
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/bf.core.js"></script>
+    <script type="text/javascript" src="/static/js/hsy.core.js"></script>
+    <script src="/static/js/page.js"></script>
+</head>
+<body>
+{include file="public/tipshow"}
+<div class="search_box">
+    <div class="search_item">
+        <div class="ex_btn_search" id="add">新增角色</div>
+    </div>
+    <div class="search_item">
+        <div class="ex_btn_search" id="search">查询</div>
+    </div>
+</div>
+<div id="datalist">
+    <table class="ex_custom_table">
+        <thead>
+        <tr><th>id</th><th>角色名字</th><th>备注</th><th>添加时间</th><th>是否启用</th><th>操作</th></tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td colspan="100%">没有任何数据</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<!-- 添加对话框 -->
+<div class="ex_mask" id="dialog_add_role">
+    <div class="_dialog">
+        <div class="_title"><span>新增角色</span><div class="ex_close_btn"></div></div>
+        <div class="_content">
+            <table class="ex_dialog_table ">
+                <tr>
+                    <td width="100">角色名字</td>
+                    <td><input type="text" data-post="post_name" data-vtype="notnull" data-vtip="请输入角色名字" class="ex_editor_box" placeholder="请输入角色名字"></td>
+                    <td>请输入角色名字</td>
+                </tr>
+                <tr>
+                    <td width="100">备注</td>
+                    <td><input type="text" data-post="post_mark" data-vtype="notnull" data-vtip="请输入备注" class="ex_editor_box" placeholder="请输入备注"></td>
+                    <td>请输入备注</td>
+                </tr>
+            </table>
+        </div>
+        <div class="_tools"><a href="javascript:;" id="save" class="ex_click_btn">保存</a><a href="javascript:;" class="ex_click_btn ex_close_btn">关闭</a></div>
+    </div>
+</div>
+<!-- 菜单列表 -->
+<div class="ex_mask" id="dialog_menu_list">
+    <div class="_dialog" style="width:80%">
+        <div class="_title"><span>菜单管理</span><div class="ex_close_btn"></div></div>
+        <div class="_content" style="padding:50px 50px; max-height:700px;">
+            <div class="content no_select flex_content">
+                {volist name="menu" id="vo"}
+                <div class="menu_set_item" data-id="{$vo.id}">
+                        <div class="menu_title"><div class="ex_checkbox_small checked_all"></div>{$vo.appname}</div>
+                        <div class="menu_container">
+                            {volist name="vo.submenu" id="v"}
+                                <div class="menu_item" data-id="{$v.id}"><div class="ex_checkbox_small" data-id="{$v.id}"></div>{$v.appname}</div>
+                            {/volist}
+                        </div>
+                    </div>
+                {/volist}
+            </div>
+        </div>
+        <div class="_tools"><a class="ex_click_btn sure">保存修改</a><a class="ex_click_btn ex_close_btn">关闭</a></div>
+    </div>
+</div>
+<!-- 接口管理 -->
+<div class="ex_mask" id="dialog_api_list">
+    <div class="_dialog" style="width:80%">
+        <div class="_title"><span>接口管理</span><div class="ex_close_btn"></div></div>
+        <div class="_content" style="padding:50px 50px; max-height:700px;">
+            <div class="content no_select flex_content">
+                {volist name="port" id="vo"}
+                <div class="api_set_item" data-id="{$vo.id}">
+                    <div class="menu_title"><div class="ex_checkbox_small checked_all"></div>{$vo.appname}</div>
+                    <div class="menu_container">
+                        {volist name="vo.submenu" id="v"}
+                        <div class="menu_item" data-id="{$v.id}"><div class="ex_checkbox_small" data-id="{$v.id}"></div>{$v.appname}</div>
+                        {/volist}
+                    </div>
+                </div>
+                {/volist}
+            </div>
+        </div>
+        <div class="_tools"><a class="ex_click_btn sure">保存修改</a><a class="ex_click_btn ex_close_btn">关闭</a></div>
+    </div>
+</div>
+<!-- 修改对话框 -->
+<div class="ex_mask" id="dialog_edit_user">
+    <div class="_dialog">
+        <div class="_title"><span>我是标题</span><div class="ex_close_btn"></div></div>
+        <div class="_content">
+            <table class="ex_dialog_table ">
+                <tr>
+                    <td width="100">编号</td>
+                    <td><input disabled type="text" data-post="post_id" data-vtype="notnull" data-vtip="请输入业主名字" class="ex_editor_box " placeholder="请输入业主名字"></td>
+                </tr>
+                <tr>
+                    <td width="100">角色</td>
+                    <td><input  type="text" data-post="post_name" data-vtype="notnull" data-vtip="请输入角色" class="ex_editor_box " placeholder="请输入角色名字"></td>
+                </tr>
+                <tr>
+                    <td width="100">备注</td>
+                    <td><input type="text" data-post="post_mark" data-vtype="notnull" data-vtip="请输入备注" class="ex_editor_box" placeholder="请输入备注内容"></td>
+                </tr>
+
+
+
+            </table>
+        </div>
+        <div class="_tools"><a href="javascript:;" id="edit_save" class="ex_click_btn">保存</a><a href="javascript:;" class="ex_click_btn ex_close_btn">关闭</a></div>
+    </div>
+</div>
+<!--删除总后台的业主信息询问框-->
+<div class="ex_mask" id="dialog_role_del">
+    <div class="_dialog" style="width:500px">
+        <div class="_title"><span>是否删除</span><div class="ex_close_btn"></div></div>
+        <div class="_content">
+        </div>
+        <div class="_tools"><a href="javascript:;" class="ex_click_btn sure">确定</a><a href="javascript:;" class="ex_click_btn ex_close_btn">取消</a></div>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+    var port_list= sessionStorage.getItem('port_list')?JSON.parse(sessionStorage.getItem('port_list')):false;
+
+    function getDataList(){
+        var head = '<tr><th>id</th><th>角色名字</th><th>备注</th><th>添加时间</th><th>启用</th><th>操作</th></tr>';
+        var body = '<tr data-idx="{_idx}"><td>{id}</td><td>{name}</td><td>{mark}</td><td>{create_time}</td><td>{setStatus}</td><td>{edit}{editmenu}{editapi}{delete}</td></tr></tr>';
+        var prepData = function(data){
+          if(port_list){
+              var port_setStatus= port_list == "all"? 1: port_list.port[20002];
+              var port_editmenu= port_list == "all"? 1: port_list.port[20003];
+              var port_editapi= port_list == "all"? 1: port_list.port[20004];
+              var port_delete= port_list == "all"? 1: port_list.port[20005];
+              var port_edit= port_list == "all"? 1: port_list.port[20006];//修改角色信息
+          }else{
+              var port_setStatus= false;
+              var port_editmenu=false;
+              var port_editapi= false;
+              var port_delete= false;
+              var port_edit=false;
+          }
+
+            for(var i in data){
+                data[i]['open'] = data[i]['status'] == 1 ?"open":"";
+                if(port_setStatus){
+                    if(data[i]['status'] == 1) {
+                        data[i]['setStatus'] = "<div class='role ex_toggle_btn open'> <div class='toggle_trigger'></div> </div>";
+                    }else{
+                        data[i]['setStatus'] = "<div class='role ex_toggle_btn '> <div class='toggle_trigger'></div> </div>";
+                    }
+                }else{
+                    if(data[i]['status'] == 1) {
+                        data[i]['setStatus'] = "<div class=' ex_toggle_btn open'> <div class='toggle_trigger'></div> </div>";
+                    }else{
+                        data[i]['setStatus'] = "<div class=' ex_toggle_btn '> <div class='toggle_trigger'></div> </div>";
+                    }
+                }
+                if(port_editmenu){
+                    data[i]['editmenu']="<a class=\"icon menu\"><i class=\"icon_menu\"></i>菜单管理</a>"
+                }else{
+                    data[i]['editmenu'] =""
+                }
+                if(port_editapi){
+                    data[i]['editapi']="<a class=\"icon api\"><i class=\"icon_api\"></i>接口管理</a>"
+                }else{
+                    data[i]['editapi'] =""
+                }
+                if(port_delete){
+                    data[i]['delete']="<a class=\"icon role_del \"><i class=\"icon_del\"></i>删除</a>"
+                }else{
+                    data[i]['delete'] =""
+                }
+                if(port_edit){
+                    data[i]['edit']="<a class=\"icon edit\"><i class=\"icon_api\"></i>编辑</a>"
+                }else{
+                    data[i]['edit'] =""
+                }
+
+            }
+            return data;
+        }
+        var bindEvent = function(_obj){
+            // 开关
+            $('.role').unbind('click').click(function(){
+                var id = $(this).parents('tr').data('idx');
+                var data = _obj.getDataById(id);
+                if(!data){
+                    toast('角色信息错误');return;
+                }
+                if(data.id == 1){
+                    toast('超级管理员不可操作');return;
+                }
+                var param = {};
+                var self_obj = $(this);
+                param['id'] = data.id;
+                if(self_obj.hasClass('open')){
+                    var status = 0;
+                }else{
+                    var status = 1;
+                }
+                param['status'] = status;
+                showLoading();
+                AjaxPost('/role/setStatus',param,function(o){
+                    if(status == 1){
+                        self_obj.addClass('open');
+                    }else{
+                        self_obj.removeClass('open');
+                    }
+                })
+            })
+            // 编辑按钮
+            //修改角色信息
+            $('.edit').unbind('click').click(function(){
+                var id = $(this).parents('tr').data('idx');
+                var o = _obj.getDataById(id);
+                _user_id = o.id; // 用户id
+                var name = o.username;
+
+
+                showDialog('dialog_edit_user','修改角色信息','',function(){
+                    // var parentDOM=$("#dialog_edit_user");
+                    outPutDOM($('#dialog_edit_user'),o,'post_');
+                    // user_name.value= o.username;
+                    // 保存按钮
+                    $('#edit_save').unbind('click').click(function(){
+                        var callback = function(obj){
+                            hideDialog('dialog_edit_user')
+                            getDataList();
+                        }
+                        quickSubmit($('#dialog_edit_user'),"/role/edit",'','post_',callback);
+                    })
+                });
+
+            })
+            // 菜单管理
+            $('.menu').unbind('click').click(function(){
+                var id = $(this).parents('tr').data('idx');
+                var data = _obj.getDataById(id);
+                if(!data){
+                    toast('角色信息错误');return;
+                }
+                if(data.id == 1){
+                    toast('超级管理员已经拥有所有权限');return;
+                }
+                showDialog('dialog_menu_list','角色<b style="color:#f33">'+data.name+'</b>菜单列表','',function(){_bindMenuEvnet(data)});// 打开窗口
+            })
+            // 接口管理
+            $('.api').unbind('click').click(function(){
+                var id = $(this).parents('tr').data('idx');
+                var data = _obj.getDataById(id);
+                if(!data){
+                    toast('角色信息错误');return;
+                }
+                if(data.id == 1){
+                    toast('超级管理员已经拥有所有权限');return;
+                }
+                showDialog('dialog_api_list','角色<b style="color:#f33">'+data.name+'</b>接口列表','',function(){_bindApiEvnet(data)});// 打开窗口
+            })
+
+
+                // 删除按钮
+                $('.role_del').unbind('click').click(function(){
+                    var id = $(this).parents('tr').data('idx');
+                    var data = _obj.getDataById(id);
+                    if(!data){
+                        toast('业主信息错误');return;
+                    }
+                    var self_parents = $(this).parents('tr');
+                    showDialog('dialog_role_del','确定删除<b style=\"color:#f33\">'+data.name+'</b>','',function(o){
+                        o.find('.sure').unbind('click').click(function(){
+                            AjaxPost('/role/delete',{id:data.id,name:data.name},function(){
+                                self_parents.remove();
+                                hideDialog('dialog_role_del');
+                            })
+                        })
+                    });
+                })
+
+
+
+
+
+
+        }
+        new pageTable($('#datalist'),'/role/list',{},head,body,bindEvent,prepData);
+    }
+    // 菜单列表 功能函数
+    function _bindMenuEvnet(obj){
+        $('.menu_set_item').find('.ex_checkbox_small').removeClass('checked');
+        console.log(obj);
+        if(obj.menulist != undefined && obj.menulist != ''){
+            try{
+                var tmp = obj.menulist.split(';');
+                var port = {};
+                for(var i in tmp){
+                    var t = tmp[i].split(':');
+                    port[t[0]] = t[1];
+                }
+            }catch(e){
+                var port = {};
+            }
+
+            $('.menu_set_item').each(function(i,o){
+                var pid = $(o).data('id');
+                if(port[pid] != undefined){
+                    $(o).find('.menu_item .ex_checkbox_small').each(function(j,k){
+                        if( (parseInt(port[pid]) & Math.pow(2,parseInt($(k).data('id')) % 100) )>0 ){
+                            $(k).addClass('checked');
+                            $(o).find('.checked_all').addClass('checked');
+                        }
+                    })
+                }
+            })
+        }
+        // 保存按钮
+        $('#dialog_menu_list .sure').unbind('click').click(function(){
+            var param = {};
+            param['id'] = obj.id; // 角色id
+            var uidlist = '';
+            $('.menu_set_item').each(function(i,o){
+                if($(o).find('.checked_all').hasClass('checked')){
+                    var pid = $(o).data('id');
+                    if($(o).find('.menu_item .ex_checkbox_small.checked').length > 0){
+                        uidlist += pid+'|';
+                        var str = '';
+                        $(o).find('.menu_item .ex_checkbox_small.checked').each(function(j,k){
+                            var sid = $(k).parent().data('id');
+                            if(str != ''){
+                                str += ',';
+                            }
+                            str += sid;
+                        })
+                        uidlist += str+' ';
+                    }
+                }
+            })
+            param['port'] = uidlist;
+            showLoading();
+            AjaxPost('/role/editmenu',param,function(o){
+                obj.menulist = o.data;
+                toast('修改成功');return;
+            })
+        })
+    }
+    // 菜单列表 功能函数
+    function _bindApiEvnet(obj){
+        $('.api_set_item').find('.ex_checkbox_small').removeClass('checked');
+        if(obj.portlist != undefined && obj.portlist != ''){
+            try{
+                var tmp = obj.portlist.split(';');
+                var port = {};
+                for(var i in tmp){
+                    var t = tmp[i].split(':');
+                    port[t[0]] = t[1];
+                }
+            }catch(e){
+                var port = {};
+            }
+
+            $('.api_set_item').each(function(i,o){
+                var pid = $(o).data('id');
+                if(port[pid] != undefined){
+                    $(o).find('.menu_item .ex_checkbox_small').each(function(j,k){
+                        if( (parseInt(port[pid]) & Math.pow(2,parseInt($(k).data('id')) % 100) )>0 ){
+                            $(k).addClass('checked');
+                            $(o).find('.checked_all').addClass('checked');
+                        }
+                    })
+                }
+            })
+        }
+        // 保存按钮
+        $('#dialog_api_list .sure').unbind('click').click(function(){
+            var param = {};
+            param['id'] = obj.id; // 角色id
+            var uidlist = '';
+            $('.api_set_item').each(function(i,o){
+                if($(o).find('.checked_all').hasClass('checked')){
+                    var pid = $(o).data('id');
+                    if($(o).find('.menu_item .ex_checkbox_small.checked').length > 0){
+                        uidlist += pid+'|';
+                        var str = '';
+                        $(o).find('.menu_item .ex_checkbox_small.checked').each(function(j,k){
+                            var sid = $(k).parent().data('id');
+                            if(str != ''){
+                                str += ',';
+                            }
+                            str += sid;
+                        })
+                        uidlist += str+' ';
+                    }
+                }
+            })
+            param['port'] = uidlist;
+            showLoading();
+            AjaxPost('/role/editapi',param,function(o){
+                obj.portlist = o.data;
+                toast('修改成功');return;
+            })
+        })
+    }
+    $(function(){
+        getDataList();
+        $("#search").click(function(){
+            getDataList();
+        })
+        // 新增角色
+        $('#add').click(function(){
+            showDialog('dialog_add_role','新增角色','',function(o){
+                o.find('#save').unbind('click').click(function(){
+                    quickSubmit(o,"/role/add",'','post_',function(){
+                        hideDialog('dialog_add_role');
+                        getDataList();
+                    });
+                })
+            })
+        })
+
+        // 全选
+        $('.menu_set_item .checked_all').click(function(){
+            if($(this).hasClass('checked')){
+                // 取消全选
+                $(this).parents('.menu_set_item').find('.ex_checkbox_small').removeClass('checked');
+            }else{
+                $(this).parents('.menu_set_item').find('.ex_checkbox_small').addClass('checked');
+            }
+        })
+        // 单选
+        $('.menu_set_item .menu_item .ex_checkbox_small').click(function(){
+            //
+            if($(this).hasClass('checked')){
+                $(this).removeClass('checked');
+            }else{
+                $(this).addClass('checked');
+            }
+            if($(this).parents('.menu_container').find('.ex_checkbox_small.checked').length > 0){
+                $(this).parents('.menu_set_item').find('.checked_all').addClass('checked');
+            }else{
+                $(this).parents('.menu_set_item').find('.checked_all').removeClass('checked');
+            }
+        })
+
+        // 全选
+        $('.api_set_item .checked_all').click(function(){
+            if($(this).hasClass('checked')){
+                // 取消全选
+                $(this).parents('.api_set_item').find('.ex_checkbox_small').removeClass('checked');
+            }else{
+                $(this).parents('.api_set_item').find('.ex_checkbox_small').addClass('checked');
+            }
+        })
+        // 单选
+        $('.api_set_item .menu_item .ex_checkbox_small').click(function(){
+            //
+            if($(this).hasClass('checked')){
+                $(this).removeClass('checked');
+            }else{
+                $(this).addClass('checked');
+            }
+            if($(this).parents('.menu_container').find('.ex_checkbox_small.checked').length > 0){
+                $(this).parents('.api_set_item').find('.checked_all').addClass('checked');
+            }else{
+                $(this).parents('.api_set_item').find('.checked_all').removeClass('checked');
+            }
+        })
+    })
+</script>

@@ -1,0 +1,344 @@
+/* 动画区 */
+/* 弹出效果 */
+@keyframes dialog_popup { 0%{ transform: scale(0.2); } 50% { transform: scale(1.2); } 70%{ transform: scale(0.8); } 100%{ transform: scale(1); } }
+@-webkit-keyframes dialog_popup { 0%{ transform: scale(0.2); } 50% { transform: scale(1.2); } 70%{ transform: scale(0.8); } 100%{ transform: scale(1); } }
+@-o-keyframes dialog_popup { 0%{ transform: scale(0.2); } 50% { transform: scale(1.2); } 70%{ transform: scale(0.8); } 100%{ transform: scale(1); } }
+@-moz-keyframes dialog_popup { 0%{ transform: scale(0.2); } 50% { transform: scale(1.2); } 70%{ transform: scale(0.8); } 100%{ transform: scale(1); } }
+
+.dialog_popup{ animation: 0.3s dialog_popup ease-in; }
+
+/* 旋转出现效果(纵向) */
+@keyframes dialog_ratateY { 0%{ transform: rotateY(90deg); } 50% { transform: rotateY(-20deg); } 70%{ transform: rotateY(10deg); } 100%{ transform: rotateY(0deg); } }
+@-webkit-keyframes dialog_ratateY { 0%{ transform: rotateY(90deg); } 50% { transform: rotateY(-20deg); } 70%{ transform: rotateY(10deg); } 100%{ transform: rotateY(0deg); } }
+@-o-keyframes dialog_ratateY { 0%{ transform: rotateY(90deg); } 50% { transform: rotateY(-20deg); } 70%{ transform: rotateY(10deg); } 100%{ transform: rotateY(0deg); } }
+@-moz-keyframes dialog_ratateY { 0%{ transform: rotateY(90deg); } 50% { transform: rotateY(-20deg); } 70%{ transform: rotateY(10deg); } 100%{ transform: rotateY(0deg); } }
+.dialog_ratateY{ animation: 0.3s dialog_ratateY ease-in; }
+
+/* 旋转出现效果(横向) */
+@keyframes dialog_ratateX { 0%{ transform: rotateX(90deg); } 50% { transform: rotateX(-20deg); } 70%{ transform: rotateX(10deg); } 100%{ transform: rotateX(0deg); } }
+@-webkit-keyframes dialog_ratateX { 0%{ transform: rotateX(90deg); } 50% { transform: rotateX(-20deg); } 70%{ transform: rotateX(10deg); } 100%{ transform: rotateX(0deg); } }
+@-o-keyframes dialog_ratateX { 0%{ transform: rotateX(90deg); } 50% { transform: rotateX(-20deg); } 70%{ transform: rotateX(10deg); } 100%{ transform: rotateX(0deg); } }
+@-moz-keyframes dialog_ratateX { 0%{ transform: rotateX(90deg); } 50% { transform: rotateX(-20deg); } 70%{ transform: rotateX(10deg); } 100%{ transform: rotateX(0deg); } }
+.dialog_ratateX{ animation: 0.3s dialog_ratateX ease-in; }
+
+/*禁止选择*/
+.no_select {-webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
+/* 普通编辑框 */
+.ex_editor_box { width:100%; height: 30px; line-height:30px; box-sizing: border-box; border: 1px Solid #dbdbdb; color:#2B1c1c; outline: none; padding-left:10px; }
+/* 绿色按钮 */
+.ex_green_btn { box-sizing: border-box; display:inline-block; min-width: 40px; padding:0px 15px 0px 15px; height:20px; line-height: 20px; text-align: center; cursor:pointer; border-radius:4px; background:#5A5; color:#fff; }
+.ex_green_btn:hover { background:#6B6; }
+
+/* 红色按钮 */
+.ex_red_btn { box-sizing: border-box;display:inline-block;  min-width: 40px; padding:0px 15px 0px 15px; height:20px; line-height: 20px; text-align: center; cursor:pointer; border-radius:4px;background:#b33; color:#fff; }
+.ex_red_btn:hover { background:#b44; }
+
+/* 灰色按钮 */
+.ex_gray_btn { box-sizing: border-box;display:inline-block;  min-width: 40px; padding:0px 15px 0px 15px; height:20px; line-height: 20px; text-align: center; cursor:pointer; border-radius:4px; background:#666; color:#fff; }
+.ex_gray_btn:hover { background:#555; }
+
+/* 蓝色按钮 */
+.ex_blue_btn { box-sizing: border-box;display:inline-block;  min-width: 40px; padding:0px 15px 0px 15px; height:20px; line-height: 20px; text-align: center; cursor:pointer; border-radius:4px; background:#44d; color:#fff; }
+.ex_blue_btn:hover { background:#55d; }
+
+/* 普通添加按钮 */
+.ex_add_btn { cursor:pointer; display:inline-block; margin:0px 2px 0px 2px; padding: 0px 12px 0px 34px; color:#ffffff; text-decoration: none; font-size:14px; background:#1C6379 url('../img/add_icon.png') 4px CENTER NO-REPEAT; background-size:16px 16px;  line-height: 28px; height:28px; border-radius:6px; }
+.ex_add_btn:hover { background-color:#498294; }
+.ex_add_btn:active { background:#1C6379 url('../img/add_icon.png') 5px CENTER NO-REPEAT; background-size:14px 14px; }
+
+/* 普通修改按钮 */
+.ex_update_btn { cursor:pointer; display:inline-block; margin:0px 2px 0px 2px; padding: 0px 12px 0px 34px; color:#ffffff; text-decoration: none; font-size:14px; background:#1C6379 url('../img/update_icon.png') 4px CENTER NO-REPEAT; background-size:16px 16px;  line-height: 28px; height:28px;  border-radius:6px;}
+.ex_update_btn:hover { background-color:#498294; }
+.ex_update_btn:active { background:#1C6379 url('../img/update_icon.png') 5px CENTER NO-REPEAT; background-size:14px 14px; }
+
+/* 普通下载按钮 */
+.ex_download_btn { cursor:pointer; display:inline-block; margin:0px 2px 0px 2px; padding: 0px 12px 0px 34px; color:#ffffff; text-decoration: none; font-size:14px; background:#1C6379 url('../img/download_icon.png') 4px CENTER NO-REPEAT; background-size:16px 16px;  line-height: 28px; height:28px;  border-radius:6px;}
+.ex_download_btn:hover { background-color:#498294; }
+.ex_download_btn:active { background:#1C6379 url('../img/download_icon.png') 5px CENTER NO-REPEAT; background-size:14px 14px; }
+
+/* 普通下载按钮 */
+.ex_back_btn { cursor:pointer; display:inline-block; margin:0px 2px 0px 2px; padding: 0px 12px 0px 34px; color:#ffffff; text-decoration: none; font-size:14px; background:#1C6379 url('../img/back_icon.png') 4px CENTER NO-REPEAT; background-size:16px 16px;  line-height: 28px; height:28px;  border-radius:6px;}
+.ex_back_btn:hover { background-color:#498294; }
+.ex_back_btn:active { background:#1C6379 url('../img/back_icon.png') 5px CENTER NO-REPEAT; background-size:14px 14px; }
+
+
+/* 普通删除按钮 */
+.ex_delete_btn { cursor:pointer; display:inline-block; margin:0px 2px 0px 2px; padding: 0px 12px 0px 34px; color:#ffffff; text-decoration: none; font-size:14px; background:#1C6379 url('../img/delete_icon.png') 4px CENTER NO-REPEAT; background-size:16px 16px;  line-height: 28px; height:28px;  border-radius:6px;}
+.ex_delete_btn:hover { background-color:#498294; }
+.ex_delete_btn:active{ background:#1C6379 url('../img/delete_icon.png') 5px CENTER NO-REPEAT; background-size:14px 14px; }
+
+/* 普通的搜索按钮 */
+.ex_search_btn { cursor:pointer; display:inline-block; margin:0px 2px 0px 2px; padding: 0px 12px 0px 34px; color:#ffffff; text-decoration: none; font-size:14px; background:#1C6379 url('../img/search2_icon.png') 4px CENTER NO-REPEAT; background-size:16px 16px;  line-height: 28px; height:28px;  border-radius:6px;}
+.ex_search_btn:hover { background-color:#498294; }
+.ex_search_btn:active { background:#1C6379 url('../img/search2_icon.png') 5px CENTER NO-REPEAT; background-size:14px 14px; }
+
+/* 普通的搜索按钮 */
+.ex_access_btn { cursor:pointer; display:inline-block; margin:0px 2px 0px 2px; padding: 0px 12px 0px 34px; color:#ffffff; text-decoration: none; font-size:14px; background:#1C6379 url('../img/access_icon.png') 4px CENTER NO-REPEAT; background-size:16px 16px;  line-height: 28px; height:28px;  border-radius:6px;}
+.ex_access_btn:hover { background-color:#498294; }
+.ex_access_btn:active { background:#1C6379 url('../img/access_icon.png') 5px CENTER NO-REPEAT; background-size:14px 14px; }
+
+/* 普通的搜索按钮 */
+.ex_interface_btn { cursor:pointer; display:inline-block; margin:0px 2px 0px 2px; padding: 0px 12px 0px 34px; color:#ffffff; text-decoration: none; font-size:14px; background:#1C6379 url('../img/interface_icon.png') 4px CENTER NO-REPEAT; background-size:16px 16px;  line-height: 28px; height:28px;  border-radius:6px;}
+.ex_interface_btn:hover { background-color:#498294; }
+.ex_interface_btn:active { background:#1C6379 url('../img/interface_icon.png') 5px CENTER NO-REPEAT; background-size:14px 14px; }
+
+
+/* 普通的按钮 */
+.ex_click_btn.checked{background:#1C6379;}
+.ex_click_btn { cursor:pointer; display:inline-block;  margin:0px 2px 0px 2px; padding:0px 10px 0px 10px; color:#ffffff; text-decoration: none; font-size:14px; background:#1C6379 ; height:28px; line-height: 28px; cursor:pointer; border-radius:6px;}
+.ex_click_btn:hover { background-color:#498294; }
+
+/* 查看更多按钮 */
+.ex_more_btn {  cursor:pointer; display:inline-block; padding: 6px 10px 6px 40px; font-size: 12px; background:url('../img/more_icon.png') 18px CENTER NO-REPEAT; background-size: 16px 16px; color:#2C3B41; text-decoration: none; list-style: none; line-height: 16px;  border-radius:6px;  }
+.ex_more_btn:hover { padding-left: 44px; }
+.ex_more_btn.disable { color:#aaa; }
+
+/* 上移按钮 */
+.ex_moveup_btn { cursor:pointer; display:inline-block; margin:0px 2px 0px 2px; padding: 2px 8px 2px 30px; color:#ffffff; text-decoration: none; font-size:12px; background:#1C6379 url('../img/moveup_icon.png') 4px CENTER NO-REPEAT; background-size:16px 16px;  line-height: 20px;}
+.ex_moveup_btn:hover { background-color:#498294; }
+/* 下移按钮 */
+.ex_movedn_btn { cursor:pointer; display:inline-block; margin:0px 2px 0px 2px; padding: 2px 8px 2px 30px; color:#ffffff; text-decoration: none; font-size:12px; background:#1C6379 url('../img/movedn_icon.png') 4px CENTER NO-REPEAT; background-size:16px 16px;  line-height: 20px;}
+.ex_movedn_btn:hover { background-color:#498294; }
+/* 刷新按钮 */
+.ex_reflush_btn { cursor:pointer; display:inline-block; margin:0px 2px 0px 2px; padding: 0px 12px 0px 34px; color:#ffffff; text-decoration: none; font-size:14px; background:#1C6379 url('../img/reflush.png') 4px CENTER NO-REPEAT; background-size:16px 16px;  line-height: 28px; border-radius:6px;}
+.ex_reflush_btn:hover { background-color:#498294; }
+.ex_reflush_btn:active { background:#1C6379 url('../img/reflush.png') 5px CENTER NO-REPEAT; background-size:14px 14px; }
+
+/* 复选框样式 */
+.ex_checkbox_small{ display: inline-block; width:16px; height: 16px; border:1px Solid #CCCCCC; background: #FFFFFF; border-radius: 50%; box-sizing: border-box; cursor: pointer; vertical-align: middle; background-size:16px 16px;}
+.ex_checkbox_small.checked{ background: url("../img/true_icon.png"); background-position: 0px 0px; background-size:16px 16px; border:none;  }
+
+/* 开关按钮 范例:
+	<div class="ex_toggle_btn">
+		<div class="toggle_trigger">
+		</div>
+	</div>
+*/
+.ex_toggle_btn{ width:45px; height:22px; background:#CCCCCC; display:inline-block; border-radius:12px; position:relative; box-shadow: #666666 2px 2px 2px inset; transition: all 0.3s ease-in-out; -webkit-transition: all 0.3s ease-in-out; vertical-align: middle;}
+.ex_toggle_btn .toggle_trigger{ width:22px; height:22px; border-radius:50%; background:#FFFFFF; border:2px Solid #CCCCCC; position:absolute;  cursor: pointer; top:-2px; left:-2px; cursor: pointer; transition: all 0.3s ease-in-out; -webkit-transition: all 0.3s ease-in-out; }
+.ex_toggle_btn.open { background:#45ca51; box-shadow: #666666 2px 2px 2px inset; }
+.ex_toggle_btn.open .toggle_trigger{ left:21px; }
+.ex_toggle_btn .toggle_trigger:hover{ background:#EEFFFF; }
+
+/* 自适应表格 (用于表单)*/
+.ex_resize_table { width:100%; border-collapse: 5px; }
+.ex_resize_table td { height:24px; line-height: 24px; font-size:12px; text-align: center; padding:4px; }
+.ex_resize_table td.LEFT { text-align: left; }
+.ex_resize_table td.CENTER {text-align: center;}
+.ex_resize_table td.RIGHT {text-align: right;}
+.ex_resize_table td.LABEL { color:#617c90; font-weight: bold;}
+
+/* 标准表格 (展示数据)*/
+.ex_custom_table { width:100%; border-collapse: collapse; }
+.ex_custom_table thead tr{  background:#1C6379;  }
+
+
+.ex_custom_table thead td { color:#fff; text-align: center; font-size:14px; height:28px; line-height: 28px; font-weight: bold; border:1px Solid #FFFFFF; 
+background: linear-gradient(top, #5B97A7 100%, #23748D 100%);
+	background: -webkit-linear-gradient(top, #5B97A7 100%, #23748D 100%); 
+	background: -moz-linear-gradient(top, #5B97A7, #23748D);
+	background: -o-linear-gradient(top, #5B97A7, #23748D);
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#5B97A7), to(#23748D));
+	position: relative;
+	overflow:hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+.ex_custom_table tbody tr { 
+    background: linear-gradient(top, #fff 100%, #eee 100%); 
+	background: -webkit-linear-gradient(top, #eee 100%, #eee 100%); 
+	background: -moz-linear-gradient(top, #FFF, #eee);
+	background: -o-linear-gradient(top, #fff, #eee);
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#fff), to(#eee));
+}
+
+.ex_custom_table tbody td { font-size:12px; height:28px; line-height: 28px;position: relative;  font-size:12px; text-align: center; color:#666; border:1px Solid #FFFFFF; font-family: 'Lucida Console', Monaco, monospace; overflow:hidden; white-space: nowrap; text-overflow: ellipsis;}
+.ex_custom_table td .wrap { width:100%; height:24px; overflow: hidden; }
+
+/* 普通的搜索文本框*/
+.ex_search_box { width:100%; height: 28px; line-height:28px; box-sizing: border-box; border: 1px Solid #cccccc; border-radius: 4px; color:#2B1c1c; outline: none;  padding-left:30px; background: url('../img/search_icon.png') 4px CENTER NO-REPEAT; background-size:16px 16px; }
+
+/* 普通的弹窗样式 */
+.ex_mask { background: rgba(0,0,0,0.5); width:100%; height:100%; position: fixed; top:0px; left:0px; display: none; }
+.ex_mask .ex_dialog { width:600px; height: auto; box-sizing:border-box; padding: 10px; margin:0px auto; margin-top:100px;  border:2px Solid #2B1C1C; background:#FFF; overflow-y:auto;}
+.ex_mask .ex_dialog .title { height: 32px; line-height: 32px; border-bottom: 1px Solid #dbdbdb; position: relative; width:100%; box-sizing: border-box;}
+.ex_mask .ex_dialog .content { padding: 5px 0px 5px 0px; font-size:14px; font-family: Arial; overflow-y:auto;}
+
+.ex_mask .ex_dialog .sub_title { padding: 10px 0px 10px 0px; font-size:12px; }
+.ex_mask .ex_dialog .tools {text-align: center; padding: 5px 0px 5px 0px; }
+.ex_mask .ex_dialog .title .close_btn { background:url('../img/chacha.png'); transition: all 1s; position: absolute; right: 2px; height: 20px; width: 20px; top: 5px; background-size:40px 20px;}
+.ex_mask .ex_dialog .title .close_btn:hover { transform: rotate(360deg); cursor: pointer; }
+
+/* 确定按钮 */
+.ex_ok_btn { cursor:pointer;  text-align:center; margin:0px 2px 0px 2px; display:inline-block; color:#ffffff; text-decoration: none; font-size:12px; height:32px; line-height: 32px; width: 100px;background:#1C6379; }
+.ex_ok_btn:hover {   background-color:#498294; }
+
+/* 拒绝按钮 */
+.ex_no_btn { cursor:pointer; text-align:center; margin:0px 2px 0px 2px; display:inline-block; color:#ffffff; text-decoration: none; font-size:12px; height:32px; line-height: 32px; width: 100px;background:#498294; }
+.ex_no_btn:hover {   background-color:#1C6379; }
+
+/* 选择下拉框 */
+.ex_select_btn { cursor:pointer; display:inline-block; padding:2px 5px;}
+.ex_select_btn:hover {border:1px Solid #1C6379;}
+
+/* 取消按钮 */
+.ex_cancel_btn { cursor:pointer;  margin:0px 2px 0px 2px; display:inline-block; color:#1C6379; text-decoration: none; font-size:12px; height:32px; line-height: 32px; width: 100px;background:#f3f3f9; }
+.ex_cancel_btn:hover {   color:#1C6379; }
+
+/* 日期选择框 */
+.ex_date_editor { width: 170px; line-height: 24px; height: 24px; text-align: LEFT; text-indent: 1em; border: 1px Solid #ddd; background:url('../img/laydate_icon.png') RIGHT CENTER NO-REPEAT; color:#666; outline: none; }
+.ex_date_editor:hover { cursor:pointer; border: 1px Solid #1C6379; }
+
+/* 单选框样式 */
+.ex_radiobox {border:1px Solid #1C6379; display:inline-block; padding:0px 10px 0px 10px; height:28px; line-height: 28px; text-align: center; text-decoration: none; color:#1C6379; margin: 2px; cursor:pointer; font-size:14px; }
+.ex_radiobox.checked{ background:#1C6379; color:#fff;  }
+.ex_radiobox { transition: background 0.5s, color 0.5s; }
+.ex_radiobox:hover { background:#1C6379; color:#fff;  }
+
+/* 复选框样式 */
+.ex_checkbox {border:1px Solid #1C6379; display:inline-block; padding:0px 10px 0px 10px; height:28px; line-height: 28px; text-align: center; text-decoration: none; color:#1C6379; margin: 2px; cursor:pointer; font-size:14px; }
+.ex_checkbox.checked{ background:#1C6379; color:#fff;  }
+.ex_checkbox { transition: background 0.5s, color 0.5s; }
+.ex_checkbox:hover { background:#1C6379; color:#fff;  }
+
+/** 提示框样式 **/
+.dialog_mask { display:none; width:100%; height:100%; background: rgba(0,0,0,0.5); position: fixed; top:0px; z-index:999;}
+.dialog_mask_tip .dialog_dialog { width: 540px; height:250px; margin:0px auto; margin-top:100px; background:#fff; overflow:hidden; box-sizing:border-box; padding: 5px; border: 2px Solid #1C6379;}
+.dialog_mask_tip .dialog_dialog .title { color: #1C6379; border-bottom: 3px Solid #1C6399; font-size:16px; display:inline-block; width:auto; height:30px; line-height:30px; padding:0px 30px 0px 10px; margin-bottom:10px; font-family: "Microsoft Yahei"; font-size:17px; }
+.dialog_mask_tip .dialog_dialog .content { color:#333; font-size:14px; line-height:24px; overflow:hidden; padding: 10px; box-sizing:border-box; text-align:center; height: 140px;}
+.dialog_mask_tip .dialog_dialog .btns { height: 50px; line-height: 50px; text-align:center; border-top: 1px Solid #f3f3f3; }
+.dialog_mask_tip .dialog_dialog .btns .btn { text-decoration:none; display:inline-block; width: 120px; height:40px; line-height:40px;  background: #1C6379; color:#fff; text-align:center; padding:0px; }
+.dialog_mask_tip .dialog_dialog .btns .btn:hover { background:#1C6360; }
+.dialog_mask_tip .dialog_dialog .icon { width:140px; height:120px; float:left; }
+.dialog_mask_tip .dialog_dialog .icon .icon_0 { width:140px; height: 120px; background: url('../img/dialog_info.png') CENTER CENTER NO-REPEAT; background-size:100px 100px;}
+.dialog_mask_tip .dialog_dialog .icon .icon_1 { width:140px; height: 120px; width:140px; height: 120px; background: url('../img/dialog_wrong.png') CENTER CENTER NO-REPEAT; background-size:100px 100px;}
+.dialog_mask_tip .dialog_dialog .icon .icon_2 { width:140px; height: 120px; background: url('../img/dialog_ok.png') CENTER CENTER NO-REPEAT; background-size:100px 100px;}
+.dialog_mask_tip .dialog_dialog .icon .icon_3 { width:140px; height: 120px; background: url('../img/dialog_error.png') CENTER CENTER NO-REPEAT; background-size:100px 100px;}
+.dialog_mask_tip .dialog_dialog .content .text { width:360px; height:120px; float:left; text-align: left; box-sizing: border-box; padding:10px; }
+
+/** @type {加载框样式} [description] */
+.dialog_mask_loading .dialog_dialog { width: 400px; margin:0px auto; margin-top:200px; background:#1C6379; overflow:hidden; box-sizing:border-box; padding: 20px; border-radius: 30px;}
+.dialog_mask_loading .dialog_dialog .title { text-align:center; padding: 10px; width:100%;}
+.dialog_mask_loading .dialog_dialog .content { text-align:center; color:#fff;}
+
+/** 询问框样式 **/
+.dialog_mask { display:none; width:100%; height:100%; background: rgba(0,0,0,0.5); position: fixed; top:0px; z-index:999;}
+.dialog_mask_ask .dialog_dialog { width: 540px; height:250px; margin:0px auto; margin-top:100px; background:#fff; overflow:hidden; box-sizing:border-box; padding: 5px; border: 2px Solid #1C6379;}
+.dialog_mask_ask .dialog_dialog .title { color: #1C6379; border-bottom: 3px Solid #1C6399; font-size:16px; display:inline-block; width:auto; height:30px; line-height:30px; padding:0px 30px 0px 10px; margin-bottom:10px; font-family: "Microsoft Yahei"; font-size:17px; }
+.dialog_mask_ask .dialog_dialog .content { color:#333; font-size:14px; line-height:24px; overflow:hidden; padding: 10px; box-sizing:border-box; text-align:center; height: 140px;}
+.dialog_mask_ask .dialog_dialog .btns { height: 50px; line-height: 50px; text-align:center; border-top: 1px Solid #f3f3f3;}
+.dialog_mask_ask .dialog_dialog .btns .btn_ok { text-decoration:none; display:inline-block; width: 120px; height:40px; line-height:40px;  background: #1C6379; color:#fff; text-align:center; padding:0px; }
+.dialog_mask_ask .dialog_dialog .btns .btn_ok:hover { background:#1C6360; }
+.dialog_mask_ask .dialog_dialog .btns .btn_cancel { text-decoration:none; display:inline-block; width: 120px; height:40px; line-height:40px;  background: #f1f1f1; color:#666; text-align:center; padding:0px; }
+.dialog_mask_ask .dialog_dialog .btns .btn_cancel:hover { background:#d9d9d9; }
+
+.dialog_mask_ask .dialog_dialog .icon { width:140px; height:120px; float:left; background: url('../img/dialog_ask.png') CENTER CENTER NO-REPEAT; background-size:100px 100px;}
+.dialog_mask_ask .dialog_dialog .content .text { width:360px; height:120px; float:left; text-align: left; box-sizing: border-box; padding:10px; }
+
+
+/** 模块样式  **/
+.Modulebox { max-width:100%; padding:10px; box-sizing:border-box; margin-top: 10px; background:#fff;}
+.Modulebox .title { height:32px; line-height:32px; font-size:18px; color:#1c6379; border-bottom: 1px Solid #ccc; font-family: "Microsoft Yahei"; display:inline-block; width: auto; border-bottom: 3px Solid #1c6379; padding:0px 40px 0px 10px; margin-bottom: 10px; }
+.Modulebox .subtitle { height:32px; line-height:32px; font-size:14px; color:#333; border-bottom: 1px Solid #ccc; padding: 4px; }
+.Modulebox .content { box-sizing:border-box; padding: 5px;}
+.search_area { width:100%; height:auto; box-sizing: border-box; padding:4px; margin-bottom: 10px; }
+.search_area .search_field{ float:left; display:inline-block; width:auto; height: 30px; line-height: 30px; font-size:14px; color:#666; padding:4px; }
+/* 普通列表框 */
+.ex_selector {width:100%; height:28px; line-height: 28px; outline:none;}
+
+/* 上传图片按钮 */
+.ex_uploadpic_btn { width: 262px; height:50px; display:inline-block; background:url('../img/upload_img.png'); cursor:pointer;}
+
+/* 分页插件CSS */
+.ex_page{ position: relative; width: 100%; }
+.ex_page_tools { padding: 5px 0px 5px 0px; }
+.ex_page_tools .ex_page_btn { padding:0px 6px 0px 6px; height: 24px; line-height: 24px; background:#ccc; display:inline-block; color:#1C6379; text-align: center; border-radius: 2px; font-weight: bold; cursor: pointer; margin:0px 2px 0px 2px;}
+.ex_page_tools .ex_page_btn:hover{ background:#1C6379;color:#FFF; }
+.ex_page_tools .ex_page_btn.active { background:#1C6379; color:#fff; }
+.ex_page .page_info { height:24px; line-height: 24px; color:#1C6379; font-weight: bold; position:absolute; bottom:5px; right:0px; text-align: right; width:400px; overflow: hidden;}
+.ex_page .ex_page_go_container { display:none; }
+.arrow_up { display:inline-block; width:0px;height:0px; border:none; border-top:4px Solid #fff;border-left:4px Solid transparent;border-right:4px Solid transparent;  position: absolute; top: 16px; right:4px; cursor:pointer;}
+.arrow_up:hover { border-top:4px Solid #666; }
+.arrow_up.active { border-top:4px Solid #3c4b76; cursor:default; }
+.arrow_bottom { display:inline-block; width:0px;height:0px; border:none; border-bottom:4px Solid #fff;border-left:4px Solid transparent;border-right:4px Solid transparent; margin-left:10px; position: absolute; top: 8px; right:4px; cursor:pointer; }
+.arrow_bottom:hover { border-bottom:4px Solid #666; }
+.arrow_bottom.active{ border-bottom:4px Solid #3c4b76; cursor:default;}
+.td_wrap { width:100%; height: 36px; position: relative; }
+/* 分页插件CSS结束 */
+
+/* 树状图插件 */
+.ex_treeview .ex_item { padding: 4px 0px 4px 0px; }
+.ex_treeview .ex_item .ex_title{font-size:12px; line-height: 24px; height:24px; box-sizing: border-box; vertical-align: middle; cursor:pointer;}
+.ex_treeview .ex_item .ex_title:hover{ color:#f00; }
+.ex_treeview .ex_item .ex_title.active{ font-weight: bold; color:#f33; }
+.ex_treeview .ex_item .ex_sub { box-sizing: border-box; padding-left: 20px; display:none;}
+
+/* 树状图插件结束 */
+.ex_navmenus { height:32px; line-height: 32px; border-bottom: 1px Solid #ccc;}
+.ex_navmenus .menu_item { height: 32px; line-height: 32px; float:left; color:#999; cursor:pointer; padding: 0px 20px 0px 20px; border-right: 1px Solid #ccc; border-bottom: 2px Solid rgba(0,0,0,0); box-sizing: border-box; }
+.ex_navmenus .menu_item:hover { background:#f3f3f3; color:#666; }
+.ex_navmenus .menu_item.active { background:#ffffff; color:#1C6379; font-weight: bold; border-bottom: 2px Solid #1C6379; }
+
+.ex_tip_dialog { padding: 5px; background:#ffffff; position: absolute; border:1px Solid #ddd; display:none; box-shadow: #999 1px 1px 3px;}
+.ex_tip_dialog .title { font-size: 14px; color:#333; border-bottom: 1px Solid #dddddd; height:30px; line-height: 30px; position: relative; }
+.ex_tip_dialog .title .close_btn { background:url('../img/chacha.png'); transition: all 1s; position: absolute; right: 2px; height: 20px; width: 20px; top: 5px; background-size:40px 20px;}
+.ex_tip_dialog .title .close_btn:hover { transform: rotate(360deg); cursor: pointer; }
+
+.ex_tip_dialog .content { font-size: 12px; }
+.ex_tip_dialog .content .tools { padding: 5px 0px 5px 0px; text-align: center; }
+
+/* 冒泡提示窗 */
+.ex_toast { position:fixed; width:100%; height: auto; padding:4px 100px 0px 100px; bottom:30%; background:none; text-align: center; box-sizing: border-box;  }
+.ex_toast .toast_container{ padding: 8px 20px 8px 20px; border-radius:10px; background:rgba(10,10,10,0.9); color:#FFFFFF; display:inline-block; width:auto; line-height: 24px;}
+
+/* 展示信息的弹窗 */
+.ex_info_table { width:100%; border-collapse: collapse;  }
+.ex_info_table td { padding: 8px;  font-family: 'Lucida Console', Monaco, monospace;word-break:break-all; font-size:14px;}
+.ex_info_table td.label { width:80px; color:#fff;
+	background: linear-gradient(top, #5B97A7 100%, #23748D 100%);
+	background: -webkit-linear-gradient(top, #5B97A7 100%, #23748D 100%); 
+	background: -moz-linear-gradient(top, #5B97A7, #23748D);
+	background: -o-linear-gradient(top, #5B97A7, #23748D);
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#5B97A7), to(#23748D)); }
+.ex_info_table td.value { width:200px; color:#333; 
+	background: linear-gradient(top, #fff 100%, #eee 100%);
+	background: -webkit-linear-gradient(top, #eee 100%, #eee 100%); 
+	background: -moz-linear-gradient(top, #FFF, #eee);
+	background: -o-linear-gradient(top, #fff, #eee);
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#fff), to(#eee)); }
+
+/* 滑块 */
+.ex_slider_bar { width:100%; height:10px; position:relative; background:#dddddd; display:inline-block; }
+.ex_slider_bar .ex_slider_bg { width:0%; height:10px; background:#25C5C2; }
+.ex_slider_bar .ex_slider_trigger { width:24px; height:24px; border: 1px Solid #eeeeee; box-sizing:border-box; position: absolute; top:-7px; left:0px; background:#f6f6f6; border-radius: 4px;  cursor:pointer;}
+.ex_slider_bar .ex_slider_trigger:hover{ background:#f3f3f3; border: 1px Solid #dddddd; }
+.ex_slider_bar .ex_slider_trigger:active{ background:#eeeeee; }
+
+
+/* 范围数值控件 */
+.ex_number_box { width:220px; height:32px; position: relative; }
+.ex_number_box .ex_number_input { width:220px; height:32px; box-sizing: border-box; border:none; outline: none; text-align: center; background:none; position: absolute; color:#333; text-shadow: #ffffff 0px 0px 1px; font-weight: bold; border: 1px Solid #eee;}
+.ex_number_box .ex_number_input:focus{ border: 1px Solid #25c5c2;  }
+.ex_number_box .ex_number_bg{ width:0%; height:32px; background:#25C5C2; transition:width 0.5s; }
+
+
+/*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/  
+::-webkit-scrollbar {
+    width: 8px;  
+    height: 8px;  
+    background-color: #F5F5F5;  
+}  
+  
+/*定义滚动条轨道 内阴影+圆角*/  
+::-webkit-scrollbar-track  
+{  
+    -webkit-box-shadow: inset 0 0 4px rgba(0,0,0,0.3);  
+    border-radius: 8px;  
+    background-color: #F5F5F5;  
+}  
+  
+/*定义滑块 内阴影+圆角*/  
+::-webkit-scrollbar-thumb  
+{  
+    border-radius: 8px;  
+    -webkit-box-shadow: inset 0 0 4px rgba(0,0,0,.3);  
+    background-color: #1C6379;  
+}  

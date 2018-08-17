@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>子账号列表</title>
+    <style>
+        *{padding:0; margin:0; font-family: Consolas, "Liberation Mono", Courier, "微软雅黑"; font-size:14px;}
+        .user_level{text-align:center;width:30px;}
+    </style>
+    <link rel="stylesheet" href="__PUBLIC__css/global.css" rel='stylesheet' type='text/css'>
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/bf.core.js"></script>
+    <script type="text/javascript" src="/static/js/hsy.core.js"></script>
+    <script src="/static/js/page.js"></script>
+    <script>
+        var roleInfo = {$role};
+        function initRolelist(list){
+            var str = '<option value="0">请选择角色</option>';
+            for(var i in list){
+                str += '<option value="'+list[i]['id']+'">'+list[i]['name']+'</option>';
+            }
+            $('select.rolelist').html(str);
+        }
+        $(function(){
+            // 角色列表
+            initRolelist(roleInfo);
+        })
+    </script>
+</head>
+<body>
+{include file="public/tipshow"}
+<div class="search_box">
+    <div class="search_item">
+        <div class="ex_btn_search" id="add">新增</div>
+    </div>
+    <div class="search_item">
+        <div class="ex_btn_search" id="search">查询</div>
+    </div>
+</div>
+<div class="search_box">
+    权值高的账号，不允许更改权值低的账号信息
+</div>
+<div id="datalist">
+    <table class="ex_custom_table">
+        <thead>
+        <tr><th>id</th><th>账号</th><th>角色</th><th>添加时间</th><th>启用</th><th>操作</th></tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td colspan="100%">没有任何数据</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<!-- 添加对话框 -->
+<div class="ex_mask" id="dialog_add_account">
+    <div class="_dialog">
+        <div class="_title"><span>新增账号</span><div class="ex_close_btn"></div></div>
+        <div class="_content">
+            <table class="ex_dialog_table ">
+                <tr>
+                    <td width="100">账号</td>
+                    <td><input type="text" data-post="post_username" id="add_user" data-vtype="notnull" data-vtip="请输入账号" class="ex_editor_box" placeholder="请输入账号"></td>
+                    <td>请输入账号</td>
+                </tr>
+                <tr>
+                    <td width="100">密码</td>
+                    <td><input type="password" data-post="post_password" id="add_pass" data-vtype="notnull" data-vtip="请输入密码" class="ex_editor_box" placeholder="请输入密码"></td>
+                    <td>请输入密码</td>
+                </tr>
+                <tr>
+                    <td width="100">确认密码</td>
+                    <td><input type="password" data-vtype="notnull" id="add_npass"  data-vtip="请输入确认密码" class="ex_editor_box" placeholder="请输入确认密码"></td>
+                    <td>请输入确认密码</td>
+                </tr>
+                <tr>
+                    <td width="100">角色</td>
+                    <td>
+                        <select data-vtype="notnull" data-vtip="请选择角色" data-post="post_accesstype" class="ex_selector rolelist">
+                        </select>
+                    </td>
+                    <td>请选择角色</td>
+                </tr>
+                <tr>
+                    <td width="100">权值</td>
+                    <td>
+                        <input type="text" class="ex_editor_box number" data-post="post_level" placeholder="请输入权值,默认99" value="99">
+                    </td>
+                    <td>请输入权值</td>
+                </tr>
+            </table>
+        </div>
+        <div class="_tools"><a href="javascript:;" id="save" class="ex_click_btn">保存</a><a href="javascript:;" class="ex_click_btn ex_close_btn">关闭</a></div>
+    </div>
+</div>
+<!--删除总后台的子账号息询问框-->
+<div class="ex_mask" id="dialog_account_del">
+    <div class="_dialog" style="width:500px">
+        <div class="_title"><span>是否删除</span><div class="ex_close_btn"></div></div>
+        <div class="_content">
+        </div>
+        <div class="_tools"><a href="javascript:;" class="ex_click_btn sure">确定</a><a href="javascript:;" class="ex_click_btn ex_close_btn">取消</a></div>
+    </div>
+</div>
+<!-- 添加重置密码对话框 -->
+<div class="ex_mask" id="dialog_reset">
+    <div class="_dialog">
+        <div class="_title"><span>重置密码</span><div class="ex_close_btn"></div></div>
+        <div class="_content">
+            <table class="ex_dialog_table ">
+                <tr>
+                    <td width="100">账号</td>
+                    <td><input type="text" disabled data-post="post_username" id="reset_user" data-vtype="notnull" data-vtip="请输入账号" class="ex_editor_box" placeholder="请输入账号"></td>
+                    <td>重置密码账号</td>
+                </tr>
+                <tr>
+                    <td width="100">密码</td>
+                    <td><input type="password" data-post="post_password" id="reset_pass" data-vtype="notnull" data-vtip="请输入密码" class="ex_editor_box" placeholder="请输入密码"></td>
+                    <td>请输入密码</td>
+                </tr>
+                <tr>
+                    <td width="100">确认密码</td>
+                    <td><input type="password" data-vtype="notnull" id="reset_npass"  data-vtip="请输入确认密码" class="ex_editor_box" placeholder="请输入确认密码"></td>
+                    <td>请输入确认密码</td>
+                </tr>
+            </table>
+        </div>
+        <div class="_tools"><a href="javascript:;" id="save_reset_pass" class="ex_click_btn">保存</a><a href="javascript:;" class="ex_click_btn ex_close_btn">关闭</a></div>
+    </div>
+</div>
+<!-- 修改对话框 -->
+<div class="ex_mask" id="dialog_edit_user">
+    <div class="_dialog">
+        <div class="_title"><span>我是标题</span><div class="ex_close_btn"></div></div>
+        <div class="_content">
+            <table class="ex_dialog_table ">
+                <tr>
+                    <td width="100">编号</td>
+                    <td><input disabled type="text" data-post="post_id" data-vtype="notnull" data-vtip="请输入业主名字" class="ex_editor_box " placeholder="请输入业主名字"></td>
+                </tr>
+                <tr>
+                    <td width="100">账号</td>
+                    <td><input disabled type="text" data-post="post_username" data-vtype="notnull" data-vtip="请输入业主名字" class="ex_editor_box " placeholder="请输入业主名字"></td>
+                </tr>
+
+                <tr>
+                    <td width="100">新角色</td>
+                    <td>
+                        <select class="ex_editor_box" id="role_selector" data-post="post_newrole">
+                            {volist name="rolelist" id="vo"}
+                                {if condition="($vo.id == 1) "}
+
+                                {else /}
+                                   <option value="{$vo.id}">{$vo.name}</option>
+                                {/if}
+
+                            {/volist}
+                        </select>
+                        <!--<input type="text" data-post="post_website" data-vtype="alphaNum"  data-vtip="website不合法" class="ex_editor_box" placeholder="请输入业主website">-->
+                    </td>
+                </tr>
+
+            </table>
+        </div>
+        <div class="_tools"><a href="javascript:;" id="edit_save" class="ex_click_btn">保存</a><a href="javascript:;" class="ex_click_btn ex_close_btn">关闭</a></div>
+    </div>
+</div>
+</body>
+</html>
+<script>
+    var default_level = {$Think.session._admin.level};
+    console.log(default_level)
+    var port_list= port_list= sessionStorage.getItem('port_list')?JSON.parse(sessionStorage.getItem('port_list')):false;
+    function getDataList(){
+        var head = '<tr><th>id</th><th>账号</th><th>角色</th><th>添加时间</th><th>启用</th><th>权值</th><th>操作</th></tr>';
+        var body = '<tr data-idx="{_idx}"><td>{id}</td><td>{username}</td><td>{rolename}</td><td>{create_time}</td><td>{status}</td><td class="level">{changeLevel}</td><td>{editapi}{reSetPass}{delete}</td></tr></tr>';
+        var prepData = function(data){
+         if(port_list){
+             var port_setStatus= port_list == "all"? 1: port_list.port[30001];
+             var port_changeLevel= port_list == "all"? 1: port_list.port[30002];
+             var port_reSetPass= port_list == "all"? 1: port_list.port[30005];
+             var port_delete= port_list == "all"? 1: port_list.port[30004];
+             var port_editAccount= port_list == "all"? 1: port_list.port[30006];
+         }else{
+             var port_setStatus= false;
+             var port_changeLevel=false;
+             var port_reSetPass= false;
+             var port_delete=false;
+             var port_editAccount=false;
+         }
+          var _time=Math.ceil((new Date())/1000)-3600;
+            for(var i in data){
+                data[i]['rolename'] = roleInfo[data[i]['accesstype']] == undefined ? "未知角色" : roleInfo[data[i]['accesstype']]['name'];
+
+
+                if(data[i]['id']==1 ){
+                    data[i]['editapi']='';
+                }else{
+                    if(port_editAccount){
+                        data[i]['editapi']='<a class="icon user_api_edit"><i class="icon_edit"></i>编辑</a>';
+                    }else{
+                        data[i]['editapi']='';
+                    }
+                }
+
+                if(port_setStatus){
+                   if(data[i]['locked'] == 0  || (data[i]['lock_status'] > 3 && _time < data[i]['lock_time'])){
+                        data[i]['status'] = "<div class='role ex_toggle_btn '> <div class='toggle_trigger'></div> </div>";
+                    }else{
+                        data[i]['status'] = "<div class='role ex_toggle_btn open'> <div class='toggle_trigger'></div> </div>";
+                    }
+                }else{
+                    if(data[i]['locked'] == 0 || (data[i]['lock_status'] > 3 && _time < data[i]['lock_time'])){
+                        data[i]['status'] = "<div class='ex_toggle_btn '> <div class='toggle_trigger'></div> </div>";
+                    }else{
+                        data[i]['status'] = "<div class='ex_toggle_btn open'> <div class='toggle_trigger'></div> </div>";
+                    }
+                }
+                if(port_changeLevel){
+                    data[i]['changeLevel'] = "<input type=\"text\" class=\"user_level number\" value=\" "+data[i]['level']+" \" ><a class=\"changelevel ex_btn_search\">GO</a>";
+                }else{
+                    data[i]['changeLevel'] ="<input disabled type=\"text\" class=\"user_level number\" value=\" "+data[i]['level']+" \" >"
+                }
+                if(port_reSetPass){
+                    data[i]['reSetPass'] = "<a class=\"icon reset\" ><i class=\"icon_reflash\"></i>重置密码</a>";
+                }else{
+                    data[i]['reSetPass'] =""
+                }
+                if(port_delete){
+                    data[i]['delete'] = "<a class=\"icon account_del\" ><i class=\"icon_del\"></i>删除</a>";
+                }else{
+                    data[i]['delete'] =""
+                }
+            }
+            return data;
+        }
+        var bindEvent = function(_obj){
+            // 开关
+            $('.role').unbind('click').click(function(){
+                var id = $(this).parents('tr').data('idx');
+                var data = _obj.getDataById(id);
+                if(!data){
+                    toast('账号信息错误');return;
+                }
+                if(data.id == 1){
+                    toast('超级管理员不可操作');return;
+                }
+                var param = {};
+                var self_obj = $(this);
+                param['id'] = data.id;
+                if(self_obj.hasClass('open')){
+                    var status = 0;
+                }else{
+                    var status = 1;
+                }
+                param['status'] = status;
+                showLoading();
+                AjaxPost('/Admin/setStatus',param,function(o){
+                    if(status == 1){
+                        self_obj.addClass('open');
+                    }else{
+                        self_obj.removeClass('open');
+                    }
+                })
+            })
+
+            // 编辑按钮
+            $('.user_api_edit').unbind('click').click(function(){
+                var id = $(this).parents('tr').data('idx');
+                var o = _obj.getDataById(id);
+                _user_id = o.id; // 用户id
+                var name = o.username;
+
+
+                showDialog('dialog_edit_user','修改账号信息','',function(){
+                    // var parentDOM=$("#dialog_edit_user");
+                    outPutDOM($('#dialog_edit_user'),o,'post_');
+                    $("#role_selector").val(o.accesstype)
+
+                    // user_name.value= o.username;
+                    // 保存按钮
+                    $('#edit_save').unbind('click').click(function(){
+                        var callback = function(obj){
+                            hideDialog('dialog_edit_user')
+                            getDataList();
+                        }
+                        quickSubmit($('#dialog_edit_user'),"/Admin/editAccount",'','post_',callback);
+                    })
+                });
+
+            })
+            //
+            $('.user_level').unbind('blur').blur(function(){
+                var id = $(this).parents('tr').data('idx');
+                var user = _obj.getDataById(id);
+                if(!user){
+                    toast('账号信息错误');return;
+                }
+                var level = user.level;
+                if(level < default_level){
+                    toast('您没有权限更改比您高级的账号');
+                    $(this).val(level);
+                    return;
+                }
+            })
+
+            //重置密码
+            $(".reset").unbind('click').bind('click',function () {
+                var idx=$(this).parents('tr').data('idx');
+               var username= _obj.getDataById(idx).username;
+                var level=_obj.getDataById(idx).level;
+                var id=_obj.getDataById(idx).id;
+                if(level<default_level){
+                    toast('你没有权限修改此账号的密码');return;
+                }
+                showDialog('dialog_reset','重置密码','',function(o){
+                      $("#reset_user").val(username);
+                    o.find('#save_reset_pass').unbind('click').click(function(){
+                        var pass = $('#reset_pass').val();
+                        var npass = $('#reset_npass').val();
+
+                        if(!pass){
+                            toast('请输入密码');$('#reset_pass').focus();return;
+                        }
+                        if(!npass){
+                            toast('请输入确认密码');$('#reset_npass').focus();return;
+                        }
+                        if(pass != npass){
+                            toast('两次密码不一致');return;
+                        }
+                        quickSubmit(o,"/Admin/resetPass",{id:id},'post_',function(){
+                            hideDialog('dialog_reset');
+                            getDataList();
+                        });
+                    })
+                })
+            })
+            // 删除角色
+            // 删除按钮
+            $('.account_del').unbind('click').click(function(){
+                var id = $(this).parents('tr').data('idx');
+                var data = _obj.getDataById(id);
+                if(!data){
+                    toast('业主信息错误');return;
+                }
+                var self_parents = $(this).parents('tr');
+                showDialog('dialog_account_del','确定删除<b style=\"color:#f33\">'+data.username+'</b>','',function(o){
+                    o.find('.sure').unbind('click').click(function(){
+                        AjaxPost('/admin/delete',{id:data.id,name:data.username},function(){
+                            self_parents.remove();
+                            hideDialog('dialog_account_del');
+                        })
+                    })
+                });
+            })
+
+            // 更改权值
+            $('.changelevel').unbind('click').click(function(){
+                var id = $(this).parents('tr').data('idx');
+                var user = _obj.getDataById(id);
+                if(!user){
+                    toast('账号信息错误');return;
+                }
+                var level_obj = $(this).parent().find('.user_level');
+                if(user.level <= default_level){
+                    toast('您只能修改权值比您小的账号');
+                    level_obj.val(user.level);
+                    return;
+                }
+                var level = level_obj.val();
+                if(!level.match(/^[1-9][0-9]*$/)){
+                    toast('权值只能输入数字');
+                    level_obj.val(user.level);
+                    return;
+                }
+                showLoading();
+                var param = {};
+                param['id'] = user.id;
+                param['level'] = level;
+                AjaxPost('/admin/changeLevel',param,function(o){
+                    toast('修改成功');return;
+                })
+            })
+
+        }
+        new pageTable($('#datalist'),'/Admin/list',{},head,body,bindEvent,prepData);
+    }
+    $(function(){
+        getDataList();
+
+        // 新增角色
+        $('#add').click(function(){
+            showDialog('dialog_add_account','新增角色','',function(o){
+                o.find('#save').unbind('click').click(function(){
+                    var pass = $('#add_pass').val();
+                    var npass = $('#add_npass').val();
+                    var user = $('#add_user').val();
+                    if(!user){
+                        toast('请输入账号');$('#add_user').focus();return;
+                    }
+                    if(!pass){
+                        toast('请输入密码');$('#add_pass').focus();return;
+                    }
+                    if(!npass){
+                        toast('请输入确认密码');$('#add_npass').focus();return;
+                    }
+                    if(pass != npass){
+                        toast('两次密码不一致');return;
+                    }
+                    quickSubmit(o,"/Admin/add",'','post_',function(){
+                        hideDialog('dialog_add_account');
+                        getDataList();
+                    });
+                })
+            })
+        })
+
+
+
+
+
+
+    })
+</script>

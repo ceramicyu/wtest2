@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>个人中心</title>
+    <style>
+        *{padding:0; margin:0; font-family: Consolas, "Liberation Mono", Courier, "微软雅黑"; font-size:14px;user-select: none}
+        .person_info tr td:nth-of-type(1){margin: 10px;padding: 10px;text-align: right}
+        .person_info tr td input{border: none; background: none;}
+
+    </style>
+    <link rel="stylesheet" href="__PUBLIC__css/global.css" rel='stylesheet' type='text/css'>
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/bf.core.js"></script>
+    <script type="text/javascript" src="/static/js/hsy.core.js"></script>
+    <script src="/static/js/page.js"></script>
+    <script>
+
+    </script>
+</head>
+<body>
+{include file="public/tipshow"}
+<table style="margin: 5%;" class="person_info">
+    <tr>
+        <td>用户编号:</td><td><input disabled type="text" id="user" class="ex_editor_box" placeholder="{$info.id}" /></td>
+    </tr>
+    <tr>
+        <td>用户帐号:</td><td><input disabled type="text" id="username" class="ex_editor_box" placeholder="{$info.username}" /></td>
+    </tr>
+    <tr>
+        <td> 密码:</td><td><input disabled type="password" id="pass" class="ex_editor_box"  placeholder="*************"/>
+        <a class="ex_btn_search" id="setpassword">修改密码</a></td>
+    </tr>
+    <tr>
+         <td> 创建时间:</td><td><input disabled type="password" id="create_time" class="ex_editor_box"  placeholder="{$info.create_time}"/></td>
+    </tr>
+    <tr>
+         <td> 最后登录时间:</td><td><input disabled type="password" id="last_time" class="ex_editor_box"  placeholder="{$info.update_time}"/></td>
+    </tr>
+    <tr>
+         <td> 最后登录ip:</td><td><input disabled type="password" id="last_ip" class="ex_editor_box"  placeholder="{$info.login_ip}"/></td>
+    </tr>
+</table>
+
+<!-- 修改对话框 -->
+<div class="ex_mask" id="dialog_edit_user">
+    <div class="_dialog">
+        <div class="_title"><span>我是标题</span><div class="ex_close_btn"></div></div>
+        <div class="_content">
+            <table class="ex_dialog_table ">
+                <tr>
+                    <td width="100">旧密码</td>
+                    <td width="250"><input  type="password" data-post="post_oldpass" data-vtype="notnull" data-vtip="请输入当前密码" class="ex_editor_box " placeholder="请输入当前密码"></td>
+                </tr>
+                <tr>
+                    <td width="100">新密码</td>
+                    <td width="250"><input  type="password" id="reset_pass" data-post="post_newpass" data-vtype="notnull" data-vtip="请输入新的密码" class="ex_editor_box " placeholder="请输入新的密码"></td>
+                </tr>
+                <tr>
+                    <td width="100">重复密码</td>
+                    <td width="250"><input  type="password" id="reset_npass" data-post="post_repass" data-vtype="notnull" data-vtip="请输入重复密码" class="ex_editor_box " placeholder="请输入重复密码"></td>
+                </tr>
+
+            </table>
+        </div>
+        <div class="_tools"><a href="javascript:;" id="edit_save" class="ex_click_btn">保存</a>
+            <a href="javascript:;" class="ex_click_btn ex_close_btn">关闭</a></div>
+    </div>
+</div>
+</body>
+</html>
+<script>
+    // 修改密码
+    $('#setpassword').unbind('click').click(function(){
+        showDialog('dialog_edit_user','修改账号密码','',function(){
+            // 保存按钮
+            $('#edit_save').unbind('click').click(function(){
+                var callback = function(obj){
+                    hideDialog('dialog_edit_user')
+                    // getDataList();
+                }
+                var pass = $('#reset_pass').val();
+                var npass = $('#reset_npass').val();
+
+                if(!pass){
+                    toast('请输入密码');$('#reset_pass').focus();return;
+                }
+                if(!npass){
+                    toast('请输入确认密码');$('#reset_npass').focus();return;
+                }
+                if(pass != npass){
+                    toast('两次密码不一致');return;
+                }
+                quickSubmit($('#dialog_edit_user'),"/Admin/setPass",'','post_',callback);
+            })
+        });
+    })
+</script>

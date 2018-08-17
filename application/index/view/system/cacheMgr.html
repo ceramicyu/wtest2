@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv=X-UA-Compatible content="IE=edge,chorme=1">
+    <title>缓存管理</title>
+    <link rel="stylesheet" href="__PUBLIC__css/tipshow.css" />
+    <link rel="stylesheet" href="__PUBLIC__css/global.css" rel='stylesheet' type='text/css'>
+    <style>
+        *{ margin:0px; padding:0px; }
+        body{ background:#fff; }
+
+        .content .item{ width:50%; float:left; height:100px; line-height: 100px; text-align: center; font-family: "Microsoft Yahei"; font-size:26px; cursor:pointer;}
+        .content .item.qianduan { background:#1BA261;color:#FFF; }
+        .content .item.houduan { background:#4B8BF5;color:#FFF; }
+        .content .item.qianduan:hover{ background:#1BB261; }
+        .content .item.houduan:hover{ background:#4B8Bd5; }
+        .check_box{ height:20px; line-height: 20px; box-sizing: border-box; padding-left:30px;   background:url('__PUBLIC__/img/checkbox.png') NO-REPEAT 0px -20px; background-size: 20px 40px; cursor:pointer; margin:2px 0px 2px 0px; }
+        .check_box.active { background-position: 0px 0px; color:#f33; }
+        .check_box:hover { color:#f33; }
+        .ex_click_btn{background: #0BB17B}
+        .lines { font-size:12px; margin: 6px 4px 0px 6px; }
+
+    </style>
+
+
+    <script type="text/javascript" src='/static/js/jquery.min.js'></script>
+    <script type="text/javascript" src="/static/js/bf.core.js"></script>
+    <script type="text/javascript" src='/static/js/hsy.core.js'></script>
+    <script src="/static/js/page.js"></script>
+
+    <script type="text/javascript">
+        $(function(){
+            $(".check_box").click(function(){
+                $(this).toggleClass("active");
+            });
+
+            $("#normal_clear").click(function(){
+                $(".check_box").removeClass("active");
+                $(".check_box.normal").addClass("active");
+            });
+
+            $("#deep_clear").click(function(){
+                $(".check_box").addClass("active");
+            });
+
+            $(document).on('dblclick','.userlist .left .user',function(){
+                var html = $(this).prop('outerHTML');
+                var id = $(this).data('id');
+                $('.userlist .right').append(html);
+                $(this).remove();
+            })
+            $(document).on('dblclick','.userlist .right .user',function(){
+                var html = $(this).prop('outerHTML');
+                $('.userlist .left').append(html);
+                $(this).remove();
+            })
+            // 全部
+            $('#all').click(function(){
+                if($(this).data('type') == 0){
+                    $('.userlist .right').append($('.userlist .left').html());
+                    $('.userlist .left').html('');
+                    $(this).data('type',1)
+                    $(this).text("取消")
+                }else{
+                    $('.userlist .left').append($('.userlist .right').html());
+                    $('.userlist .right').html('');
+                    $(this).data('type',0)
+                    $(this).text("全选")
+                }
+            })
+
+            //开始清理
+            // $('#start_clear').unbind('click').click(function(){
+            //     var userid =$("#user_select").val();
+            //
+            //
+            //     if (userid == '') {
+            //         toast("请先选择业主");
+            //         return;
+            //     }
+            //     var list = '';
+            //     $(".check_box.active").each(function(){
+            //         if (list != '') {
+            //             list += ',';
+            //         }
+            //         list += $(this).data("value");
+            //     });
+            //
+            //     if (list == '') {
+            //         toast("请先选择需要清理的缓存");
+            //         return;
+            //     }
+            //     var callback = function(obj){
+            //
+            //     }
+            //     quickSubmit($('#dialog_edit_user'),"/api/cache",{userid:userid,list:list},'post_',callback);
+            // })
+
+            //批量清理
+            $('#all_clear').click(function(){
+                showDialog('dialog_edit_user','批量清除缓存','',function(){
+                    // 保存按钮
+                    $('#edit_start').unbind('click').click(function(){
+                        var userid='';
+                        $('.right .user').each(function(i,o){
+                            if(userid != ''){
+                                userid += '|'
+                            }
+                            userid += $(o).data('id')
+                        })
+                        var callback = function(obj){
+                            if(obj.data== '' ){
+                                //全部设置成功
+                                hideDialog('dialog_edit_user')
+                            }else{
+                                //显示设置失败的
+
+                                // outPutDOM($('#dialog_user_info'),o,'post_');
+                                showDialog('dialog_user_info','清理缓存信息','',function(){
+
+                                    // 功能按钮
+                                    var str='<tr><td class="left">编号</td><td>业主</td><td>状态</td><td>原因</td></tr>';
+                                    for ( i in obj.data){
+
+                                            str+='<tr><td class="left">'+i+'</td><td>'+ obj.data[i].username+'</td><td>'+ obj.data[i].status+'</td><td>'+ obj.data[i].param+'</td></tr>';
+
+                                    }
+                                    $("#dialog_info").html(str)
+                                });
+                            }
+
+                        }
+
+                        var list = '';
+                        $(".check_box.active").each(function(){
+                            if (list != '') {
+                                list += ',';
+                            }
+                            list += $(this).data("value");
+                        });
+
+                        if (list == '') {
+                            toast("请先选择需要清理的缓存");
+                            return;
+                        }
+
+
+                        AjaxPost("/api/cache",{list:list,idlist:userid},callback);
+                    })
+                });
+            })
+
+
+        });
+    </script>
+</head>
+<body>
+{include file="public/tipshow"}
+<div class="Modulebox">
+        <div class="search_area">
+            <!--<div class="search_field">-->
+                <!--业主: <select class="ex_selector" style="width:120px;" id="user_select">-->
+                <!--<option value="">请选择业主</option>-->
+                <!--{volist name="userlist" id="vo"}-->
+                <!--<option value="{$vo.id}">{$vo.username}</option>-->
+                <!--{/volist}-->
+            <!--</select>-->
+            <!--</div>-->
+            <div class="lines">
+                <!--<a class="ex_click_btn" id="start_clear">开始清理</a>-->
+                <a class="ex_click_btn" id="all_clear">开始清理</a>
+            </div>
+        </div>
+    <div class="content">
+
+        <div class="lines">
+            <a class="ex_click_btn" id="normal_clear">一般清除</a> /
+            <a class="ex_click_btn" id="deep_clear">深度清除</a>
+        </div>
+        <div class="lines"><div class="check_box deep" data-value="admin">清除管理员缓存(将导致所有管理员掉线)</div></div>
+        <div class="lines"><div class="check_box normal" data-value="admin_log">清除管理员日志缓存</div></div>
+        <div class="lines"><div class="check_box normal" data-value="article">清除文章缓存</div></div>
+        <div class="lines"><div class="check_box normal" data-value="agent">清除代理缓存</div></div>
+        <div class="lines"><div class="check_box normal" data-value="domain">清除域名缓存</div></div>
+        <div class="lines"><div class="check_box normal" data-value="fandian">清除返点缓存</div></div>
+        <div class="lines"><div class="check_box normal" data-value="game">清除彩种缓存</div></div>
+        <div class="lines"><div class="check_box deep" data-value="qishu">清除期数缓存</div></div>
+        <div class="lines"><div class="check_box deep" data-value="user">清除用户缓存(将导致所有用户掉线)</div></div>
+        <div class="lines"><div class="check_box deep" data-value="admin_menu">清除管理员菜单缓存</div></div>
+        <div class="lines"><div class="check_box normal" data-value="user_type">清除层级缓存</div></div>
+        <div class="lines"><div class="check_box deep" data-value="event">清除系统活动缓存</div></div>
+        <div class="lines"><div class="check_box deep" data-value="notice">清除系统公告缓存</div></div>
+        <div class="lines"><div class="check_box normal" data-value="play_config">清除彩种玩法缓存</div></div>
+        <div class="lines"><div class="check_box normal" data-value="thirdpay">清除充值端口缓存</div></div>
+        <div class="lines"><div class="check_box deep" data-value="admin_port">清除管理员接口缓存</div></div>
+        <div class="lines"><div class="check_box deep" data-value="static_synthe">清除综合报表查询缓存</div></div>
+    </div>
+</div>
+
+<include file="plugin/tipshow" />
+<style>
+    .search_box{width:600px; margin:0 auto}
+    .userlist {border:1px solid #ccc; padding:2px 0; height:300px; overflow-y:auto  }
+    .userlist .user{text-align:center; cursor:default; padding:2px 0}
+    .userlist .user:hover{background:#ccc}
+    .clearFloat{clear:both}
+    .search_box .left{width:50%;border-right:1px solid #ccc; box-sizing: content-box; float: left;height:100%;overflow-y:auto  }
+    .search_box .right{width:49%;box-sizing: content-box; float: left;height:100%;overflow-y:auto  }
+    .Modulebox {margin-top: 15px;margin-left: 20px;}
+    .Modulebox .search_field {float: left;margin: 6px}
+</style>
+<div class="ex_mask" id="dialog_edit_user">
+    <div class="_dialog">
+        <div class="_title"><span>我是标题</span><div class="ex_close_btn"></div></div>
+        <div class="search_box">
+            业主 ： <div class="ex_click_btn" id="all" data-type="0">全选</div>
+            <span>双击选择</span>
+        </div>
+        <div class="search_box userlist">
+
+            <div class="left">
+
+                {volist name="userlist" id="vo"}
+                <div class="user" data-id="{$vo.id}" >{$vo.username}</div>
+                {/volist}
+            </div>
+            <div class="right">
+            </div>
+            <div class="clearFloat"></div>
+        </div>
+        <div class="_tools"><a href="javascript:;" id="edit_start" class="ex_click_btn">清理缓存</a>
+            <a href="javascript:;"  class="ex_close_btn ex_click_btn">关闭</a>
+            <!--<a href="javascript:;" class="ex_click_btn ex_close_btn">关闭</a>-->
+        </div>
+    </div>
+</div>
+<!-- 返回对话框 -->
+<div class="ex_mask" id="dialog_user_info" >
+    <div class="_dialog" style="width: 1000px">
+        <div class="_title"><span>我是标题</span><div class="ex_close_btn"></div></div>
+        <div class="_content">
+            <table class="ex_custom_table ex_dialog_table left" id="dialog_info">
+                <tr>
+                    <td class="left">编号</td>
+                    <td>业主</td>
+                </tr>
+
+            </table>
+        </div>
+        <!--<div class="_tools"><a href="javascript:;" class="ex_click_btn">保存</a><a href="javascript:;" class="ex_click_btn ex_close_btn">关闭</a></div>-->
+    </div>
+</div>
+</body>
+</html>

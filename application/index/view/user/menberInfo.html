@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv=X-UA-Compatible content="IE=edge,chorme=1">
+    <title>会员查询</title>
+    <style>
+        *{ margin:0px; padding:0px; }
+        .list_icon{
+            width: 20px;
+            height: 28px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .icon_web{
+            background: url(/static/img/icon_web.png) CENTER CENTER NO-REPEAT;
+            background-size: 16px 16px;
+        }
+        .icon_wap{
+            background: url(/static/img/icon_wap.png) CENTER CENTER NO-REPEAT;
+            background-size: 16px 16px;
+        }
+        .icon_android{
+            background: url(/static/img/icon_android.png) CENTER CENTER NO-REPEAT;
+            background-size: 16px 16px;
+        }
+        .icon_ios{
+            background: url(/static/img/icon_ios.png) CENTER CENTER NO-REPEAT;
+            background-size: 16px 16px;
+        }
+    </style>
+    <link rel="stylesheet" href="__PUBLIC__css/global.css" rel='stylesheet' type='text/css'>
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/bf.core.js"></script>
+    <script type="text/javascript" src="/static/js/hsy.core.js"></script>
+    <script src="/static/js/page.js"></script>
+    <script>
+        var trad_type = {$trad_type};
+        var client = ['<a class="list_icon icon_web"></a>','<a class="list_icon icon_wap"></a>','<a class="list_icon icon_android"></a>','<a class="list_icon icon_ios"></a>'];
+        var userInfo = {};
+        function getUserInfo(){
+            var id = $('#owner').val();
+            var param = {};
+            if(id < 1){
+                toast("请选择业主");return;
+            }
+            param['id'] = id;
+            var username = $('#menber').val();
+            if(username == undefined || username == ''){
+                toast("请输入会员账号");return;
+            }
+            param['username'] = username;
+            AjaxPost('/api/getMenberInfo',param,function(o){
+                obj = beforeEvent(o.data);
+                obj.oid = id; // 业主id
+                outPutDOM($('#datalist'),obj,'post_');
+                bindEvent(o.data);
+            })
+        }
+        // 数据转换
+        function beforeEvent(obj){
+            var d = new Date();
+            for(var i in obj){
+                if(i.indexOf('price') > 0){
+                    // 金额字段
+                    obj[i] = _parseFloat(obj[i],2);
+                }
+                if(i.indexOf('time') > 0 && obj[i] > 0){
+                    // 时间字段
+                    obj[i] = d._format("{y}/{m}/{d} {h}:{i}:{s}",obj[i]);
+                }
+                if(i.indexOf('client') > 0){
+                    // 设备
+                    obj[i] = (client[obj[i]] == undefined) ? "PC":client[obj[i]];
+                }
+            }
+            // 上次登录时间
+            obj['last_login'] = d._format("{y}/{m}/{d} {h}:{i}:{s}",obj['last_login']);
+
+            // 是否在线
+            if(obj['uptime'] - 300 > (d.getTime() / 1000) ){
+                obj['online'] = "(在线)";
+            }else{
+                obj['online'] = "(离线)";
+            }
+            if(obj['actype'] == 0){
+                obj['actype_str'] = "会员";
+            }else if(obj['actype'] == 1){
+                obj['actype_str'] = "股东";
+            }else{
+                obj['actype_str'] = (obj['actype'] - 2)+"级代理"
+            }
+            if(obj['locked'] == 1){
+                obj['locked'] = "已锁定"
+            }else{
+                obj['locked'] = '正常';
+            }
+            userInfo = obj;
+            return obj;
+        }
+        // 会员事件绑定   _obj 会员数据
+        function bindEvent(_obj){
+
+        }
+        $(function(){
+            $('#search').click(function(){
+                getUserInfo();
+            })
+            $('#touzhuLog').click(function(){
+                var id = $('#owner').val();
+                var username=$("#menber").val();
+                var ac=JSON.stringify({id:id,username:username,type:0})
+                console.log(ac)
+                if(id==0 || username==''){
+                    ac=JSON.stringify({})
+                    toast("请输入查询消息！")
+                    return
+                }
+                sessionStorage.setItem('touzhuLog',ac);
+              //  window.open ('page.html', 'newwindow', 'height=100, width=400, top=0,left=0, toolbar=no, menubar=no, scrollbars=no, resizable=no,location=no, status=no')
+                window.open("../touzhuLog","_blank",'width='+window.innerWidth+',height='+window.innerHeight+',top=10%,left=0,toolbar=no, menubar=no, scrollbars=yes, resizable=no,location=no, status=no')
+                sessionStorage.removeItem('touzhuLog');
+            })
+            $('#priceLog').click(function(){
+                    var id = $('#owner').val();
+                    var username=$("#menber").val();
+                    var ac=JSON.stringify({id:id,username:username,type:0})
+                console.log(ac)
+                if(id==0 || username==''){
+                        ac=JSON.stringify({})
+                    toast("请输入查询消息！")
+                    return
+                }
+                sessionStorage.setItem('priceLog',ac);
+                window.open("../price","_blank",'width='+window.innerWidth+',height='+window.innerHeight+',top=10%,left=0,menubar=no,toolbar=no,status=no,location=no,scrollbars=yes')
+                sessionStorage.removeItem('priceLog');
+              })
+        })
+    </script>
+</head>
+<body>
+{include file="public/tipshow"}
+<div class="search_box">
+    <div class="search_item">
+        <select name="" id="owner" class="ex_selector">
+            <option value="0">请选择业主</option>
+            {volist name="userlist" id="vo"}
+            <option value="{$vo.id}">{$vo.username}</option>
+            {/volist}
+        </select>
+    </div>
+    <div class="search_item">
+        <input type="text" id="menber" class="ex_editor_box" placeholder="请输入会员账号">
+    </div>
+    <div class="search_item">
+        <div class="ex_btn_search" id="search">查询</div>
+    </div>
+    <div class="search_item">
+        <div class="ex_btn_search" id="touzhuLog">投注记录</div>
+    </div>
+    <div class="search_item">
+        <div class="ex_btn_search" id="priceLog">交易记录</div>
+    </div>
+    <div class="search_item">
+        <div class="ex_btn_search" id="addUserZd">添加总代</div>
+    </div>
+</div>
+<style>
+    #menberInfo{width:80%;margin:0 auto}
+    #menberInfo .thead{ background: #0b6cbc; color:#fff}
+    #menberInfo tr.list td{width:10%}
+    #menberInfo tr.list td:nth-child(odd){ background:#cccccc; color:#000;}
+    #menberInfo .detail{cursor: pointer; color:red}
+    #menberInfo .detail:hover{ text-decoration: underline}
+</style>
+<div id="datalist">
+    <table class="ex_custom_table" id="menberInfo">
+        <tr>
+            <td id="userInfo" class="thead" colspan="100%">【基本】信息</td>
+        </tr>
+        <tr class="list">
+            <td>会员ID:</td>
+            <td data-post="post_uid"></td>
+            <td>会员账号:</td>
+            <td><span data-post="post_username"></span><span data-post="post_online"></span></td>
+            <td>真实姓名:</td>
+            <td data-post="post_real_name"></td>
+            <td>余额:</td>
+            <td data-post="post_price"></td>
+            <td>打码:</td>
+            <td data-post="post_price_rq"></td>
+        </tr>
+        <tr class="list">
+            <td>账号状态:</td>
+            <td data-post="post_locked"></td>
+            <td>用户层级:</td>
+            <td data-post="post_user_type"></td>
+            <td>最近登录时间:</td>
+            <td data-post="post_last_login"></td>
+            <td>最近登录IP:</td>
+            <td data-post="post_last_ip"></td>
+            <td>最近登录设备:</td>
+            <td data-post="post_last_client"></td>
+        </tr>
+        <tr>
+            <td class="thead" colspan="100%">【注册】信息</td>
+        </tr>
+        <tr class="list">
+            <td>注册时间:</td>
+            <td data-post="post_reg_time"></td>
+            <td>注册ip:</td>
+            <td data-post="post_reg_ip"></td>
+            <td>注册设备:</td>
+            <td data-post="post_reg_client"></td>
+            <td>注册域名:</td>
+            <td data-post="post_reg_link"></td>
+            <td>邀请码:</td>
+            <td data-post="post_reg_code"></td>
+        </tr>
+        <tr>
+            <td class="thead" colspan="100%">【推广】信息</td>
+        </tr>
+        <tr class="list">
+            <td>代理等级:</td>
+            <td data-post="post_actype_str"></td>
+            <!--<td>代理ID:</td>-->
+            <!--<td data-post="post_tuijian"></td>-->
+            <td>上级:</td>
+            <td data-post="post_tuijian_user"></td>
+            <td>总代ID:</td>
+            <td data-post="post_zd_id"></td>
+            <td>股东ID:</td>
+            <td data-post="post_gd_id"></td>
+        </tr>
+        <tr class="list">
+            <td>返点:</td>
+            <td data-post="post_fandian_price"></td>
+        </tr>
+        <tr>
+            <td class="thead" colspan="100%">【返水】信息</td>
+        </tr>
+        <tr class="list">
+            <td>时时彩:</td>
+            <td data-post="post_ssc_val"></td>
+            <td>PK10:</td>
+            <td data-post="post_pk10_val"></td>
+            <td>快三:</td>
+            <td data-post="post_k3_val"></td>
+            <td>3D:</td>
+            <td data-post="post_3d_val"></td>
+            <td>11x5:</td>
+            <td data-post="post_11x5_val"></td>
+        </tr>
+        <tr class="list">
+            <td>PC蛋蛋:</td>
+            <td data-post="post_pcdd_val"></td>
+            <td>六合彩:</td>
+            <td data-post="post_lhc_val"></td>
+        </tr>
+        <tr>
+            <td class="thead" colspan="100%">【统计】信息</td>
+        </tr>
+        <tr class="list">
+            <td>提款总额:</td>
+            <td><a class="detail" data-type="{:TTYPE_TK_OK}" data-post="post_tk_price"></a></td>
+            <td>投注总额:</td>
+            <td><a class="detail" data-type="{:TTYPE_TZ_OK}" data-post="post_tz_price"></a></td>
+            <td>充值总额:</td>
+            <td><a class="detail" data-type="{:TTYPE_ALL_PAY}" data-post="post_pay_price"></a></td>
+            <td>中奖总额:</td>
+            <td><a class="detail" data-type="{:TTYPE_TZ_WIN}" data-post="post_win_price"></a></td>
+            <td>活动礼金:</td>
+            <td><a class="detail" data-type="{:TTYPE_EV_ODD}" data-post="post_huo_price"></a></td>
+        </tr>
+        <tr class="list">
+            <td>提款次数:</td>
+            <td><a class="detail" data-type="{:TTYPE_TK_OK}" data-post="post_tk_count"></a></td>
+            <td>投注笔数:</td>
+            <td><a class="detail" data-type="{:TTYPE_TZ_OK}" data-post="post_tz_count"></a></td>
+            <td>充值次数:</td>
+            <td><a class="detail" data-type="{:TTYPE_ALL_PAY}" data-post="post_pay_count"></a></td>
+            <td>中奖笔数:</td>
+            <td><a class="detail" data-type="{:TTYPE_TZ_WIN}" data-post="post_win_count"></a></td>
+            <td>礼金笔数:</td>
+            <td><a class="detail" data-type="{:TTYPE_EV_ODD}" data-post="post_huo_count"></a></td>
+        </tr>
+    </table>
+</div>
+<!-- 现金明细 -->
+<div class="ex_mask" id="dialog_manberTragLog">
+    <div class="_dialog" style="width:90%;">
+        <div class="_title"><span>现金明细</span><div class="ex_close_btn"></div></div>
+        <div class="search_box">
+            <div class="search_item">
+            交易类型：
+            <select class="ex_selector" id="trad_type">
+                <option value="0">全部</option>
+                <option value="{:TTYPE_ALL_PAY}">充值</option>
+                <option value="{:TTYPE_TZ_OK}">投注</option>
+                <option value="{:TTYPE_TK_OK}">提款</option>
+                <option value="{:TTYPE_TZ_WIN}">中奖</option>
+                <option value="{:TTYPE_EV_ODD}">活动</option>
+
+                <option value="5">投注退还</option>
+                <option value="6">提款退还</option>
+                <option value="7">返点</option>
+                <option value="52">现金交易</option>
+
+            </select>
+            </div>
+            <div class="search_item">
+            订单号:
+            <input type="text" class="ex_editor_box" id="order">
+            </div>
+            <div class="search_item">
+                时间 ：<input type="date" id="btime">--<input type="date" id="etime">
+            </div>
+            <div class="search_item">
+                <div class="ex_btn_search" id="search_menber_trad">查询</div>
+            </div>
+        </div>
+        <div class="_content">
+            <table class="ex_custom_table">
+                <tr><th>ID</th><th>订单</th><th>账号</th><th>交易时间</th><th>交易类型</th><th>金额</th><th>交易前金额</th><th>交易后金额</th><th>备注</th><th>设备类型</th></tr>
+            </table>
+        </div>
+        <div class="_tools"><a class="ex_click_btn ex_close_btn">关闭</a></div>
+    </div>
+</div>
+<script>
+    var D = new Date();
+    function getTradLog(price){
+        var getUserTraglog = function(){
+            var param = {};
+            param['username'] = username;
+            var id = userInfo.oid == undefined ? 0:userInfo.oid;
+            if(id == 0){
+                toast("业主信息不正确 ");return;
+            }
+            param['id'] = id;
+            param['type'] = $('#trad_type').val();
+            param['btime'] = $('#btime').val();
+            param['etime'] = $('#etime').val();
+            param['order'] = $('#order').val();
+            var head = '<tr><th>ID</th><th>订单</th><th>账号</th><th>交易时间</th><th>交易类型</th><th>金额</th><th>交易前金额</th><th>交易后金额</th><th>备注</th><th>设备类型</th></tr>';
+            var body = '<tr><td>{guid}</td><td>{dingdan}</td><td>{username}</td><td>{pay_time}</td><td>{type_str}</td><td>{price}</td><td>{price_old}</td><td>{price_new}</td><td>{comment}</td><td>{client_type}</td></tr>';
+            var _bindEvent = function(_obj){
+
+            }
+            var prepData = function(obj){
+                for(var i in obj){
+                    obj[i]['client_type'] = client[obj[i]['client_type']] == undefined ? client[0] : client[obj[i]['client_type']];
+                    obj[i]['type_str'] = ""
+                    if(trad_type[obj[i]['type']] == undefined){
+                        obj[i]['type_str'] = "未知交易类型"
+                    }else{
+                        obj[i]['type_str'] += trad_type[obj[i]['type']]['name']
+                        if(trad_type[obj[i]['type']]['sub_type'][obj[i]['sub_type']]!= undefined){
+                            obj[i]['type_str'] += "--"+trad_type[obj[i]['type']]['sub_type'][obj[i]['sub_type']]['name']
+                        }
+                    }
+                    obj[i]['pay_time'] = D._format("{y}/{m}/{d} {h}:{i}:{s}",obj[i]['pay_time'])
+                }
+                return obj;
+            }
+            new pageTable($('#dialog_manberTragLog ._content'),'/api/getMenberTradLog',param,head,body,_bindEvent,prepData);
+        }
+        $('#search_menber_trad').unbind('click').click(function(){
+            getUserTraglog();
+        })
+        var flush = true;
+        if(price == undefined || price == '' || parseFloat(price) <= 0){
+            flush = false; // 不立即查询
+        }
+        var username = userInfo.username == undefined ? '':userInfo.username;
+        if(username == ''){
+            toast("请先搜索用户");return;
+        }
+        showDialog('dialog_manberTragLog',"<b style='color:red'>"+username+"</b>"+'交易明细','',function(o){
+            // 查询交易明细
+            if(flush){
+                // 立即查询
+                getUserTraglog();
+            }
+        })
+    }
+    $(function(){
+        $('.detail').click(function(){
+            var price = $(this).text();
+            var type = $(this).data('type');
+            $('#trad_type').val(type)
+            getTradLog(price);
+        })
+
+        $('#addUserZd').click(function(){
+            showDialog('dialog_addUserZd',"添加总代",'',function(o){
+                // 查询交易明细
+            })
+        })
+    })
+</script>
+
+<!-- 添加总代 -->
+<div class="ex_mask" id="dialog_addUserZd">
+    <div class="_dialog" style="width:700px;">
+        <div class="_title"><span>添加总代</span><div class="ex_close_btn"></div></div>
+        <div class="_content">
+            <table class="ex_dialog_table">
+                <tr><td width="100">请选择业主:</td><td>
+                    <select name="" id="ownerlist" class="ex_selector">
+                        <option value="0">请选择业主</option>
+                        {volist name="userlist" id="vo"}
+                        <option value="{$vo.id}">{$vo.username}</option>
+                        {/volist}
+                    </select>
+                </td><td>请选择要添加总代的业主</td>
+                </tr>
+                <tr>
+                    <td>股东帐号</td>
+                    <td><input type="text" class="ex_editor_box" id="gd_username" placeholder="请输入股东帐号"></td>
+                    <td>请输入股东帐号， 如果不输入，则默认ID为2的股东</td>
+                </tr>
+                <tr>
+                    <td>总代帐号:</td>
+                    <td><input type="text" class="ex_editor_box" id="username" placeholder="请输入总代帐号"></td>
+                    <td>请输入总代帐号</td>
+                </tr>
+                <tr>
+                    <td>赔率:</td>
+                    <td><input type="number" min="0" max="2" step="0.001" id="peilv" class="ex_editor_box" placeholder="请输入总代的赔率"></td>
+                    <td>请输入总代的赔率,赔率范围三：0-2</td>
+                </tr>
+            </table>
+        </div>
+        <div class="_tools"><a class="ex_click_btn" data-disable="0" id="add_user_zd">添加</a><a class="ex_click_btn ex_close_btn">关闭</a></div>
+    </div>
+</div>
+<script>
+    $(function(){
+        $("#add_user_zd").click(function(){
+            console.log($(this).data("disable"))
+            var _this = $(this)
+            if(_this.data("disable") != 0){
+                return
+            }
+            _this.data("disable",1)
+            var param = {};
+            param['id'] = $("#ownerlist").val()
+            param['gd_username'] = $("#gd_username").val()
+            param['username'] = $("#username").val()
+            param['peilv'] = $("#peilv").val()
+            showLoading("正在添加，请稍候!")
+            AjaxPost("/api/addUserZd",param,function(obj){
+                hideLoading()
+                _this.data("disable",0)
+                if(obj.msg > 0){
+                    toast(obj.param);return
+                }
+                toast("添加成功!")
+            })
+        })
+    })
+</script>
+</html>

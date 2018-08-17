@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>登录</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+    <link rel="stylesheet" href="__PUBLIC__css/global.css" rel='stylesheet' type='text/css'>
+    <script src="__PUBLIC__js/jquery.min.js"></script>
+    <script src="__PUBLIC__js/bf.core.js"></script>
+    <script src="__PUBLIC__js/hsy.core.js"></script>
+    <style>
+        *{margin: 0;padding:0;}
+        body{
+            background: #ffffff;
+            width: 100%;
+            height: 100%;
+        }
+        .web_title{
+            padding-top:50px;
+            text-align: center;
+            color:#2ebaf5;
+        }
+        .web_title h1 {
+            font-size:36px;
+        }
+        .web_title p {
+            color:#2ebbf3
+        }
+        .copy-rights{
+            text-align: center;
+            width:100%;
+        }
+        .web_content{
+            width:500px;
+            height:500px;
+            margin:20px auto;
+        }
+    </style>
+</head>
+<body>
+<script>
+    if(window.top != window){
+        window.top.location = '';
+    }
+    function login(){
+        var user = $('#username').val();
+        var pass = $('#password').val();
+        var verifycode = $('#verifycode').val();
+        if(!user.match(/^[a-z0-9]{4,20}$/i)){
+            toast('用户名不符合规范');
+            return;
+        }
+        if(!pass.match(/^[a-z0-9]{4,20}$/i)){
+            toast('密码不符合规范');return;
+        }
+        AjaxPost('/login',{username:user,password:pass,verifycode:verifycode},function(obj){
+           if(obj.msg > 0){
+               toast(obj.param)
+               if(parseInt(obj.msg) == 40010){
+                   $("#verifyimg").attr('src','{:captcha_src()}?'+Math.random())
+               }
+               return
+           }
+            showLoading();
+            setTimeout(function(){
+                window.location.href = '/index';
+            },1000);
+        })
+    }
+    $(document).ready(function(c) {
+        // 回车事件
+        $('#username,#password,#verifycode').keydown(function(e){
+            if(e.keyCode == 13){
+                login();
+            }
+        })
+        // 点击事件
+        $('#login').click(function(){
+            login();
+        })
+    });
+
+</script>
+
+<div class="web_title">
+    <h1>后台管理系统</h1>
+    <p>backstage management system</p>
+</div>
+
+<div class="web_content">
+    <div class="form">
+        <!--<form onsubmit="return false">-->
+            <div class="form-field">
+                <lable class="lable">帐号:</lable>
+                <div class="field"><i class="icon_user"></i><input type="text" id="username" required="required" class="ex_editor_box form-input" placeholder="请输入用户名"></div>
+            </div>
+            <div class="form-field">
+                <lable class="lable">密码:</lable>
+                <div class="field"><i class="icon_pass"></i><input type="password" id="password" required="required" class="ex_editor_box form-input" placeholder="请输入密码"></div>
+            </div>
+            <div class="form-field">
+                <lable class="lable">验证码:</lable>
+                <div class="field"><i class="icon_verify"></i><input type="text" id="verifycode" style="width:100px;float: left;" class="ex_editor_box form-input" placeholder="请输入验证码"><img src="{:captcha_src()}" style="width: 100px;margin-left:5px;float: left;display: inline-block" onclick="javascript:this.src='{:captcha_src()}?'+Math.random()" id="verifyimg" alt=""></div>
+            </div>
+            <div class="form-field" style="margin-top:30px;text-align: center">
+                <input type="submit" value="登陆" id="login">
+            </div>
+        <!--</form>-->
+    </div>
+</div>
+<div class="copy-rights">
+    <p>System Version:1.0.0</p>
+</div>
+
+</body>
+</html>

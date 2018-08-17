@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv=X-UA-Compatible content="IE=edge,chorme=1">
+    <title>投注记录</title>
+    <style>
+        *{ margin:0px; padding:0px; }
+        #datalist{margin-top:7px;}
+        #datalist .ex_radiobox{ margin:0 3px; margin-bottom:5px;}
+    </style>
+    <link rel="stylesheet" href="__PUBLIC__css/global.css" rel='stylesheet' type='text/css'>
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/bf.core.js"></script>
+    <script type="text/javascript" src="/static/js/hsy.core.js"></script>
+    <script type="text/javascript" src='/static/laydate/laydate.js'></script>
+    <script src="/static/js/page.js"></script>
+    <script>
+
+
+    </script>
+</head>
+<body>
+
+{include file="public/tipshow"}
+
+
+<style>
+    .search_box{width:600px; margin:0 auto}
+    .userlist {border:1px solid #ccc; padding:2px 0; height:300px; overflow-y:auto  }
+    .userlist .user{text-align:center; cursor:default; padding:2px 0}
+    .userlist .user:hover{background:#ccc}
+    .clearFloat{clear:both}
+    .search_box .left{width:50%;border-right:1px solid #ccc; box-sizing: content-box; float: left;height:100%;overflow-y:auto  }
+    .search_box .right{width:49%;box-sizing: content-box; float: left;height:100%;overflow-y:auto  }
+    .Modulebox {margin-top: 15px;margin-left: 20px;}
+    .Modulebox .search_field {float: left;margin: 6px}
+    a.list_icon { width:20px; height:28px; display:inline-block; vertical-align: middle;}
+    a.list_icon.icon_web { background:url('__PUBLIC__icon/icon_web.png') CENTER CENTER NO-REPEAT; background-size:16px 16px; }
+    a.list_icon.icon_wap { background:url('__PUBLIC__icon/icon_wap.png') CENTER CENTER NO-REPEAT; background-size:16px 16px; }
+    a.list_icon.icon_android { background:url('__PUBLIC__icon/icon_android.png') CENTER CENTER NO-REPEAT; background-size:16px 16px; }
+    a.list_icon.icon_ios { background:url('__PUBLIC__icon/icon_ios.png') CENTER CENTER NO-REPEAT; background-size:16px 16px; }
+</style>
+<div class="Modulebox no_select">
+    <div class="search_area">
+        <div class="search_field">
+            业主: <select class="ex_selector" style="width:80px;" id="user_select">
+                        {volist name="userlist" id="vo"}
+                        <option value="{$vo.id}">{$vo.username}</option>
+                        {/volist}
+                </select>
+        </div>
+        <div class="search_field">
+            日期: <input class="ex_date_editor  ex_editor_box" id="search_date_begin" value="{:date('Y-m-d')}" type="text" readonly="readonly" /> -
+            <input class="ex_date_editor ex_editor_box" value="{:date('Y-m-d')}" id="search_date_end" type="text" readonly="readonly" value="" />
+
+            <!--彩种分类: <select class="ex_selector" style="width:80px;" id="game_select">-->
+            <!--&lt;!&ndash;<option value="">全部</option>&ndash;&gt;-->
+            <!--<option value="ssc">时时彩</option>-->
+            <!--<option value="pk10">PK拾</option>-->
+            <!--<option value="k3">快三</option>-->
+            <!--<option value="11x5">十一选五</option>-->
+            <!--<option value="pcdd">PC蛋蛋</option>-->
+            <!--<option value="lhc">六合彩</option>-->
+            <!--<option value="3d">3D</option>-->
+        <!--</select>-->
+        </div>
+        <!--<div class="search_field">-->
+            <!--游戏: <select class="ex_selector" style="width:140px;" id="game_id_select">-->
+                    <!--{volist name="gamelist" id="vo"}-->
+                        <!--<option value="{$vo.game_id}" data-jstag="{$vo.js_tag}" class="game_{$vo.game_id}">{$vo.game_name}</option>-->
+                    <!--{/volist}-->
+                 <!--</select>-->
+        <!--</div>-->
+
+        <div class="search_field">
+            状态: <select class="ex_selector" style="width:80px;" id="status_select">
+            <option value="0">全部</option>
+            <option value="1">已中奖</option>
+            <option value="2">未中奖</option>
+            <option value="3">未开奖</option>
+        </select>
+        </div>
+
+        <div class="search_field">
+            用户帐号:<input type="text" id="username" class="ex_editor_box" />
+        </div>
+        <div class="search_field">
+            订单号:<input type="text" id="zhudan" class="ex_editor_box" />
+        </div>
+        <div class="search_field">
+            <div class="ex_btn_search" id="search">查询</div>
+        </div>
+    </div>
+</div>
+
+<div class="ex_mask" id="dialog_edit_user">
+    <div class="_dialog">
+        <div class="_title"><span>我是标题</span><div class="ex_close_btn"></div></div>
+        <div class="search_box">
+            业主 ： <div class="ex_click_btn" id="all" data-type="0">全选</div>
+            <span>双击选择</span>
+        </div>
+        <div class="search_box userlist">
+
+            <div class="left">
+
+                {volist name="userlist" id="vo"}
+                <div class="user" data-id="{$vo.id}" >{$vo.username}</div>
+                {/volist}
+            </div>
+            <div class="right">
+            </div>
+            <div class="clearFloat"></div>
+        </div>
+        <div class="_tools"><a href="javascript:;" id="edit_start" class="ex_click_btn">开启玩法</a>
+            <a href="javascript:;" id="edit_stop" class="ex_click_btn">关闭玩法</a>
+            <!--<a href="javascript:;" class="ex_click_btn ex_close_btn">关闭</a>-->
+        </div>
+    </div>
+</div>
+<div id="datalist">
+    <table class="ex_custom_table">
+        <thead>
+        <tr><th>订单号</th><th>用户账号</th><th>投注时间</th><th>彩种名称</th><th>期数</th><th>投注类型</th><th>玩法</th><th>投注详情</th><th>开奖号码</th><th>注数</th><th>投注金额</th><th>中奖金额</th><th>赔率</th><th>退水</th><th>状态</th><th>平台</th><th>版本号</th></tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td colspan="100%">没有任何数据</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    var port_list= sessionStorage.getItem('port_list')?JSON.parse(sessionStorage.getItem('port_list')):false;
+    var game_list={$gamelist};
+    function getDataList(ac){
+        var head = '<tr><th>订单号</th><th>用户账号</th><th>投注时间</th><th>彩种名称</th><th>期数</th><th>投注类型</th><th>玩法</th><th>投注详情</th><th>开奖号码</th><th>注数</th><th>投注金额</th><th>中奖金额</th><th>赔率</th><th>退水</th><th>状态</th><th>平台</th><th>版本号</th></tr>\n';
+        var body = '<tr data-idx="{_idx}"><td>{zhudan}</td><td>{username}</td><td>{tz_time}</td><td>{game_name}</td><td>{qishu}</td><td>{tz_type}</td><td>{wanfa}</td><td>{xiangqing}</td><td>{kj_balls}</td><td>{zhushu}</td><td>{price}</td><td>{win}</td><td>{peilv}</td><td>{fanshui}</td><td>{status_str}</td><td>{client_type_str}</td><td>{edition}</td></tr></tr>';
+        var _status_str = [];
+        _status_str[0] = "<a style='color:#999;'>未开奖</a>";
+        _status_str[1] = "<a style='color:#911;'>开奖中</a>";
+        _status_str[2] = "<a style='color:#f33;'>未中奖</a>";
+        _status_str[3] = "<a style='color:#090;'>已中奖</a>";
+        _status_str[4] = "<a style='color:#119;'>已撤单</a>";
+        var _client = ["<a class='list_icon icon_web'></a>", "<a class='list_icon icon_wap'></a>", "<a class='list_icon icon_android'></a>", "<a class='list_icon icon_ios'></a>"];
+        var prepData = function(data){
+            if(port_list){
+                var port_edit= port_list == "all"? 1: port_list.port[30001];
+            }else{
+                var port_edit=false;
+            }
+              for(var i in data){
+                if (data[i].status == 0) {
+                    data[i].checkbox = '<div class="ex_checkbox_small check_event" data-guid="'+data[i].guid+'" ></div>';
+                    data[i].status_str = _status_str[0];
+                } else if (data[i].status == 1) {
+                    data[i].status_str = _status_str[1];
+                } else if (data[i].status > 1 && data[i].status < 4) {
+                    if (data[i].win == 0) {
+                        data[i].status_str = _status_str[2];
+                    } else {
+                        data[i].status_str = _status_str[3];
+                    }
+                } else if (data[i].status == 4 ) {
+                    data[i].status_str = _status_str[4];
+                }
+                data[i].client_type_str = _client[parseInt(data[i].client_type)];
+                data[i].price = _parseFloat(data[i].price, 2);
+                data[i].win = _parseFloat(data[i].win, 2);
+                data[i].fanshui = _parseFloat(data[i].fanshui, 2);
+                data[i].yingkui = _parseFloat((data[i].win - data[i].price), 2);
+                // data[i].tz_time =
+                if (data[i].zhuihao_id == 0) {
+                    data[i].tz_type = "普通";
+                } else {
+                    data[i].tz_type = "追号";
+                }
+                 if(game_list[parseInt(data[i].gameid)]){
+                     data[i].game_name =game_list[parseInt(data[i].gameid)].game_name
+                 }else{
+                     data[i].game_name ="未知游戏("+data[i].gameid+")";
+                 }
+            }
+            return data;
+        }
+        var bindEvent = function(_obj){
+
+
+        }
+        if(ac==undefined){
+            ac={
+                id:$('#user_select').val(),
+                begin_time:search_date_begin.value,
+                end_time:search_date_end.value,
+                username:$('#username').val(),
+                status:$('#status_select').val(),
+                zhudan:$("#zhudan").val()
+            };
+        }else{
+            ac=JSON.parse(ac)
+            $("#user_select").val(ac.id)
+            $("#search_date_begin").val("")
+            $("#username").val(ac.username)
+        }
+
+        new pageTable($('#datalist'),'/api/getTouzhuLog',ac,head,body,bindEvent,prepData);
+    }
+    $(function(){
+
+        if(sessionStorage.getItem('touzhuLog')){
+            getDataList(sessionStorage.getItem('touzhuLog'));
+            sessionStorage.removeItem('touzhuLog')
+        }
+
+        //laydate
+        laydate({elem: '#search_date_begin'});
+        laydate({elem: '#search_date_end'});
+
+        $(document).on('dblclick','.userlist .left .user',function(){
+            var html = $(this).prop('outerHTML');
+            var id = $(this).data('id');
+            $('.userlist .right').append(html);
+            $(this).remove();
+        })
+        $(document).on('dblclick','.userlist .right .user',function(){
+            var html = $(this).prop('outerHTML');
+            $('.userlist .left').append(html);
+            $(this).remove();
+        })
+        // 全部
+        $('#all').click(function(){
+            if($(this).data('type') == 0){
+                $('.userlist .right').append($('.userlist .left').html());
+                $('.userlist .left').html('');
+                $(this).data('type',1)
+                $(this).text("取消")
+            }else{
+                $('.userlist .left').append($('.userlist .right').html());
+                $('.userlist .right').html('');
+                $(this).data('type',0)
+                $(this).text("全选")
+            }
+        })
+
+
+        $("#game_id_select").change(function(){
+            getDataList();
+        });
+        $("#game_select").change(function(){
+
+            var gametag = $(this).val();console.log(gametag)
+           var gametype= $("#game_id_select option")
+            var  k=0;
+            $("#game_id_select option").hide()
+            for(var i=0;i<gametype.length;i++){
+               if(gametype.eq(i).data("jstag")==gametag){
+                  $("#game_id_select option").eq(i).show()
+                   if(k==0){
+                       $("#game_id_select").val(i+1);k=1;
+                   }
+               }else{
+                   $("#game_id_select option").eq(i).hide()
+               }
+
+            }
+
+
+            getDataList();
+        });
+
+
+
+        $("#search").click(function () {
+            getDataList();
+        })
+    })
+</script>
+</html>

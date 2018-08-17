@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv=X-UA-Compatible content="IE=edge,chorme=1">
+    <meta charset="UTF-8">
+    <title>赛果记录</title>
+    <style>
+        *{ margin:0px; padding:0px; }
+        .h28{height: 24px}
+    </style>
+    <link rel="stylesheet" href="__PUBLIC__css/global.css" rel='stylesheet' type='text/css'>
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/bf.core.js"></script>
+    <script type="text/javascript" src="/static/js/hsy.core.js"></script>
+    <script type="text/javascript" src='/static/laydate/laydate.js'></script>
+    <script src="/static/js/page.js"></script>
+    <script>
+        //只提title
+        function GetTitle(strValue) {
+            if(strValue!= null && strValue!= ""){
+                var reg = /[\【].*[\】]/g;
+                return strValue.match(reg);
+            }
+            else
+                return "";
+        }
+        function post_ac() {
+            var param = {   gid:$("#user_select").val(),
+                ip:$("#_ip").val(),
+                username:$("#_admin").val(),
+                keyword:$("#_keywords").val(),
+                bdate:$("#search_date_begin").val(),
+                edate:$("#search_date_end").val(),
+            };
+            return param
+        }
+        function getDataList(param){
+
+            var head = '<tr><th>ID</th><th>管理员</th><th>操作时间</th><th>赛事</th><th>主队-客队</th><th>赛事时间</th><th width="40%" >赛果</th></tr>';
+            var body ='<tr data-idx="{_idx}"><td>{id}</td><td><p>{user}</p><p>{ip}</p></td><td><p>{otime}</p></td><td><p>GID:{gid}</p>{league_name}</td><td><p>主队：{home_name}</p><p>客队：{visitor_name}</p></td><td>{timestr}</td><td>{result_data}</td></tr>';;
+            var _date=new Date();
+            var prepData = function(data){
+
+                for(var i in data){
+                    data[i]['btime'] =_date._format('{y}-{m}-{d} {h}:{i}',data[i]['begin_time']/1000);
+                    data[i]['etime'] =_date._format('{y}-{m}-{d} {h}:{i}',data[i]['end_time']/1000);
+                    data[i]['otime']="<p>"+_date._format('{y}-{m}-{d} ',data[i]['time'])+"</p>"+"<p>"+_date._format('{h}:{i}:{s} ',data[i]['time'])+"</p>";
+                    data[i].detail="<a class=\"ex_btn_search detail\"  style='padding: 3px 10px;'>详情</a>"
+                    data[i].timestr="<p  >开始："+data[i]['btime']
+                            +"</p><p >结束："+data[i]['etime'] +"</p>"
+                }
+                return data;
+            }
+            var bindEvent = function(_obj){
+                $(".hover_show").hover(function () {
+
+                    var tip= $(this).parent().find("div").eq(0)
+                    tip.attr("style","position:absolute;background:wheat;z-index:66;margin:5px;")
+
+                },function () {
+                    var tip= $(this).parent().find("div").eq(0)
+                    tip.attr("style","display:none")
+                })
+                $(".detail").off("click").on("click",function () {
+                    var id = $(this).parents('tr').data('idx');
+                    var data=_obj.getDataById(id)
+
+                    outPutDOM($('#dialog_detail'),'','post_');
+                    showDialog('dialog_detail','日志详情','',function(){
+
+                        // 功能按钮
+                        var str='<tr>\n' +
+                            '                <td width="140"><strong>ID：</strong>'+data['guid']+'</td>\n' +
+                            '                <td><strong>管理员名称：</strong><span id="tab_admin">'+data["admin"]+'</span>' +
+                            '<strong style="margin-left: 40px;">管理员ip：</strong><span id="tab_ip">'+data["ip"]+'</span></td>\n' +
+                            '            </tr>\n' +
+                            '            <tr>\n' +
+                            '                <td>内容：</td>\n' +
+                            '                <td><textarea name="" cols="30" rows="10" id="tab_comment" style="overflow-y:scroll;width: 100%">'+
+                                data['comment_str']+
+                            '</textarea></td></tr><tr>\n' +
+                            '                <td>操作时间：</td>\n' +
+                            '                <td><span id="tab_time">'+data["create_time"]+'</span></td>\n' +
+                            '            </tr>';
+                        // for ( i in obj.data){
+                        //     str+='<tr><td class="left">'+i+'</td><td>'+ obj.data[i].username+'</td><td>'+obj.data[i].status+'</td><td>'+ obj.data[i].param+'</td></tr>';
+                        // }
+                        $("#dialog_info").html(str)
+                    });
+                })
+            }
+
+            new pageTable($('#datalist'),'/log/getAdminLog/',param,head,body,bindEvent,prepData,20);
+        }
+
+
+        $(function(){
+
+            //laydate
+            laydate({elem: '#search_date_begin'});
+            laydate({elem: '#search_date_end'});
+            //查询
+            $('#search').click(function (){
+                getDataList(post_ac());
+            })
+
+$("#search").click();
+
+        })
+
+
+
+    </script>
+</head>
+<body>
+
+
+{include file="public/tipshow"}
+<div class="search_box">
+    <div class="search_item">
+            GID: <input  class="h28" style="width:80px;" id="user_select" />
+
+
+        管理员：<input id="_admin" class="h28" type="text" value="" >
+        IP：<input id="_ip"  class="h28" type="text" value="">
+        日期: <input class="ex_date_editor h28" id="search_date_begin" value="{:date('Y-m-d')}" type="text" readonly="readonly" /> -
+        <input class="ex_date_editor h28" value="{:date('Y-m-d')}" id="search_date_end" type="text" readonly="readonly" value="" />
+        关键字：<input id="_keywords"  class="h28" type="text" value="">
+    </div>
+    <div class="search_item">
+        <div class="ex_btn_search" id="search">查询</div>
+    </div>
+
+</div>
+<div id="datalist">
+    <table class="ex_custom_table">
+        <thead>
+        <tr><th>ID</th><th>管理员</th><th>操作时间</th><th>赛事</th><th>主队-客队</th><th>赛事时间</th><th>赛果</th></tr>
+        </thead>
+        <tbody>
+        <tr><td colspan="100%">没有数据</td></tr>
+        </tbody>
+    </table>
+</div>
+<!-- 添加对话框 -->
+<div class="ex_mask" id="dialog_detail">
+    <div class="_dialog">
+        <div class="_title"><span>我是标题</span><div class="ex_close_btn"></div></div>
+        <div class="_content">
+            <table class=" ex_dialog_table left ex_custom_table" id="dialog_info" >
+                <tr>
+                    <td class="left">编号</td>
+                    <td>业主</td>
+                    <td>状态</td>
+                    <td>原因</td>
+                </tr>
+
+            </table>
+        </div>
+        <div class="_tools"><a href="javascript:;" class="ex_click_btn ex_close_btn">关闭</a></div>
+    </div>
+</div>
+
+
+
+</body>
+</html>

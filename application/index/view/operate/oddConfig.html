@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv=X-UA-Compatible content="IE=edge,chorme=1">
+    <title>自动赔率设置</title>
+    <link rel="stylesheet" href="__CSS__/tipshow.css" />
+    <style>
+        *{ margin:0px; padding:0px; }
+        body{ background:#fff; }
+        .gamelist { width: 100%; padding: 10px 5px 10px 5px; box-sizing:border-box; border-bottom: 1px Solid #ddd;}
+        .gamelist .game_btn { display:inline-block; padding:0px 10px 0px 10px; border-right: 1px Solid #333; color:#37F; list-style: none; font-size:12px; cursor:pointer; }
+        .gamelist .game_btn:last-child { border:0px;  }
+        .gamelist .game_btn:hover {color:#d00;}
+        .gamelist .game_btn.active { color:#666; cursor:default;  }
+        .btn_save{ display:inline-block; width:180px; height:40px; line-height: 40px; background:#3AF; color:#fff; text-decoration: none; border-radius: 4px;}
+        .Modulebox .tools { text-align: center; width:100%; height: 50px; line-height: 50px; border-top: 1px Solid #ddd; position: fixed; background:#f3f3f3; bottom: 0px; }
+
+        .ex_editor_box {font-family: 'Courier New'; color:#f60; border-radius:4px; }
+        .ex_custom_table td{ border: 1px Solid #dddddd; }
+        .ex_custom_table tbody tr.change td { background:#FFeeee; }
+        .ex_custom_table tbody tr td{ border: 1px Solid #368096; }
+
+        .ex_radiobox { background:#FFFFFF; border-radius:5px; }
+
+        .ex_radiobox2{ display:inline-block; width: 100px; height:30px; line-height: 30px; font-size:14px; text-align: center; border:1px Solid #1C2B36; border-radius:5px; box-sizing: border-box; cursor:pointer; }
+        .ex_radiobox2.checked{ background:#1C2B36; color:#FFFFFF; }
+
+        /*香港六合彩*/
+        .touzhu_container {width: 840px; margin: 0; padding: 0; margin: auto; background: #FFFEF4; margin-top: 160px; box-sizing: border-box;}
+        .touzhu_container .title {
+            width: 840px; height: 32px; line-height: 32px; background: #215E78;
+            text-align: center; font-size: 16px; color: #FFFEFE; margin: 0; padding: 0;
+        }
+        .touzhu_container table { width:100%; border-collapse: collapse;  font-size:12px; }
+        .touzhu_container table thead { background: #268dff; color:#fff;}
+        .touzhu_container table tbody td.active { background: #ddd; }
+        .touzhu_container table td { border:solid 1px #d2d2d2; height: 36px; line-height: 36px; text-align: center; }
+        .touzhu_container table td b { display: inline-block; width: 26px; height: 26px; border-radius: 26px; line-height: 26px; text-align: center; color:#fff; font-weight:normal; margin-bottom: 3px;}
+        .touzhu_container table td b.red { background: #ae2132; }
+        .touzhu_container table td b.blue { background: #1a48a0; }
+        .touzhu_container table td b.green { background: #0a7c25; }
+        .touzhu_container table td.peilv { color:red; }
+        .touzhu_container table td input { width: 60px; outline: none; padding-left:5px; }
+        .touzhu_container ._btn_ask {
+            width: 100%; height: 48px; line-height: 48px; margin: 0; padding: 0; text-align: center; background-color: #F0F7FC;
+        }
+        .touzhu_container ._btn_ask .xglhc_commit, .touzhu_container ._btn_ask .xglhc_cancel {
+            display: inline-block; width: 120px; height: 36px; line-height: 36px; background: #3AF; color: #fff; text-decoration: none; border-radius: 3px;
+            margin: 0 20px 0 20px; cursor: pointer;
+        }
+        .touzhu_container ._btn_ask .xglhc_cancel { background: #cdcdcd;}
+        .global-set {width: 100%; height: 40px; line-height: 40px; box-sizing: border-box; padding-left: 16px; background: #d1dce4;}
+        .global-set input { width: 120px; height: 24px; line-height: 24px; text-indent: 10px; border-radius: 5px; border-color: #E0C43A; outline: none; font-weight: bold;}
+        .global-set input:focus, .global-set input:active { outline: none;}
+        .global-set .btn-globle { width: 130px; height: 30px; line-height: 30px; color: #333333; border: none; background: #F3F3F3; outline: none; border-radius: 5px;}
+        .global-set .btn-globle:active { outline: solid 1px #F3F3F3;}
+    </style>
+    <script type="text/javascript" src='__PUBLIC__js/jquery.min.js'></script>
+    <script type="text/javascript" src='__PUBLIC__js/bf.core.js'></script>
+    <script type="text/javascript" src='__PUBLIC__js/hsy.core.js'></script>
+    <script src="__PUBLIC__js/set_peilv_lhc.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript">
+        var adad={$gamelist};
+        $(function(){
+            var cur_gameid = 0;
+            // $(".gamelist .game_btn").click(function(){
+            // 	if ($(this).hasClass("active")) {
+            // 		return;
+            // 	}
+            // 	$(".gamelist .game_btn").removeClass("active");
+            // 	$(this).addClass("active");
+            // 	getUI($(this).data("gameid"));
+            // });
+
+
+            // 载入相关的界面
+            function getUI(gameid, js_tag) {
+               // showLoading("正在载入游戏倍率配置...");
+
+                var _self = this;
+
+                // 六合彩赔率设置绑定事件
+                this.bindTipshowClick = function (idx, parentid, value) {
+                    // 弹窗确定
+                    $(".xglhc_commit").bind("click", function(){
+                        var hisdata = value.split("|");  // 计算原始赔率
+                        var res = true;  //
+                        $("#content_xglhc table input").each(function(){
+                            if ($(this).val() === "") {
+                                tipshow("赔率设置不能为空!");
+                                res = false;  // 空赔率
+                                return false;
+                            }
+                            var dataid = $(this).data("id");
+                            hisdata[dataid] = $(this).val();  // 新赔率
+                        })
+                        if (res) {
+                            var result = hisdata.join("|");
+                            if (value !== result) {   // 比对新配率与旧的赔率 ， 不同修改， 相同隐藏
+                                $("#game_oddconfigs tbody tr").eq(parentid).addClass("change");
+                                $("#game_oddconfigs tbody tr").eq(parentid).find("td").eq(idx).find("input").val(result);
+                                $("#peilv_box_xglhc").fadeOut(200);
+                            }else{
+                                $("#peilv_box_xglhc").fadeOut(200);
+                            }
+                        }
+                    })
+
+                    // 弹窗取消
+                    $(".xglhc_cancel").bind("click", function(){
+                        $("#peilv_box_xglhc").fadeOut(200);
+                    })
+
+                    // 统一赔率输出检查
+                    $(".btn-globle").click(function(){
+                        if ($(".globle_write").val() !== "") {
+                            $("#content_xglhc table input").val($(".globle_write").val());
+                        }
+                    })
+
+                    // 输入事件
+                    $('input.write_price.number, input.globle_write').blur(function(){
+                        $(this).val(_parseFloat($(this).val(), 3));
+                    })
+                }
+                this.bindEvent = function () {
+                    console.log("BIND!");
+                    $(".ex_editor_box").mousedown(function(){
+                        if ($(this).hasClass("fandian")) {
+                            return;
+                        }
+                        if (js_tag == 'lhc') {
+                            var hisdata = $(this).val().split("|");
+                            if (hisdata.length === 1) {
+                                return;
+                            }
+                            var playid = $(this).parents("tr").data("id");
+                            var tplid = $(this).data("tpl");
+                            var value = $(this).val();   // 获取原始赔率字符串 1
+
+                            var subidx = $(this).parent().index();  // 获取所在的列
+                            var parentid = $(this).parents("tr").index();  // 获取所在的行
+
+                            var minmax = "最低赔率";
+                            if ($(this).parent().prev().find("input").length > 0) {
+                                minmax = "最高赔率";
+                            }
+
+                            var _global_input = '<div class="global-set">统一赔率设置： <input class="globle_write" type="number" placeholder="输入统一赔率" /> <button class="btn-globle">检查输出</button> </div>';
+                            var title = '<div class="title"> 赔率设置： '+$(this).parents("tr").find("td.playname").text()+' ('+minmax+') </div>';
+                            var _btn_ask = '<div class="_btn_ask"><div class="xglhc_commit">确定</div><div class="xglhc_cancel">取消</div></div>'
+
+                            // console.log("tpl:")
+                            // console.log(tplid);
+                            // console.log("playid");
+                            // console.log(playid);
+                            if (tplid == 13) {
+                                switch (playid){
+                                    case 31:
+                                        tplid = 14;
+                                        break;
+                                    case 32:
+                                        tplid = 15;
+                                        break;
+                                    case 33:
+                                        tplid = 16;
+                                        break;
+                                    case 34:
+                                        tplid = 17;
+                                        break;
+                                    case 35:
+                                        tplid = 18;
+                                        break;
+                                    default:
+                                        tplid = 13;
+                                        break;
+                                }
+                            }
+
+                            var res = title + tpl[tplid] + _global_input + _btn_ask;
+                            $("#content_xglhc").html("");
+                            $("#content_xglhc").html(res);
+
+                            $("#content_xglhc table input").each(function(){
+                                var dataid = $(this).data("id");
+                                $(this).val(hisdata[dataid]);
+                            })
+                            $("#peilv_box_xglhc").fadeIn(200);  // 渲染完成
+                            _self.bindTipshowClick(subidx, parentid, value);  // 传入 列， 行， 原始赔率
+                        }
+                    });
+
+                    $(".ex_editor_box").keyup(function(){
+                        $(this).parents("tr").addClass("change");
+
+
+
+                    });
+
+                    $('.min_price').keyup(function(){
+
+                        var minprice  = $(this).val();
+                        var arr_val_min = minprice.split("|");
+                        var new_arr_min = [];
+                        for (var i = 0; i < arr_val_min.length; i++) {
+
+                            new_arr_min[i] = parseFloat(arr_val_min[i]/1.8) * 2;
+                        }
+
+                        var sub_val_min = new_arr_min.join("|");
+
+                        $(this).parents("tr").find(".max_price").val(sub_val_min);
+                    });
+                    $(".max_price").keyup(function(){
+
+                        var maxprice  = $(this).val();
+                        var arr_val_max = maxprice.split("|");
+                        var new_arr_max = [];
+                        for (var i = 0; i <arr_val_max.length; i++) {
+                            new_arr_max[i] = parseFloat(arr_val_max[i]/2) * 1.8;
+                        }
+                        var sub_val_max = new_arr_max.join("|");
+                        $(this).parents("tr").find(".min_price").val(sub_val_max);
+
+
+                    });
+                    $(".ex_radiobox").click(function(){
+                        if (!$(this).hasClass("checked")) {
+                            $(this).parents("tr").addClass("change");
+                            $(this).parent().find(".ex_radiobox").removeClass("checked");
+                            $(this).addClass("checked");
+                        }
+                    });
+
+
+
+                }
+
+                AjaxPost("operate/getoddsConfig", {_method:'PUT',ac: "oddsConfig", gameid:gameid},
+                    function(obj){
+                        hideLoading();
+                        if (obj.msg > 0) {
+                            tipshow(obj.param);
+                            return;
+                        }
+
+                        console.log("获取游戏具体数据");
+                        console.log(obj.data);
+
+                        var _head_tpl = '<tr class="wanfa_{wanfatype}" data-id="{playid}"  data-menu="{menu_name}" data-wanfa="{play_name}"> <td rowspan="{count}"> {menu_name} </td> <td width=100 class="playname"> {play_name} </td> <td><input type="text" data-tpl="{tpl}" class="ex_editor_box min_price" value="{play_min_price}" /></td> <td><input type="text" data-tpl="{tpl}" class="ex_editor_box max_price" value="{play_max_price}" /></td> <td> <div class="ex_radiobox showtype {check_3}" data-value="3">全部</div> <div class="ex_radiobox showtype {check_2}" data-value="2">仅手机</div> <div class="ex_radiobox {check_1} showtype" data-value="1">仅电脑</div> </td> <td><input type="text" class="ex_editor_box fandian" value="{fandian}" /></td> </tr>';
+
+                        var _body_tpl = '<tr class="wanfa_{wanfatype}" data-id="{playid}" data-menu="{menu_name}" data-wanfa="{play_name}"> <td width=100 class="playname"> {play_name} </td> <td><input type="text" data-tpl="{tpl}" class="ex_editor_box min_price" value="{play_min_price}" /></td> <td><input type="text" data-tpl="{tpl}" class="ex_editor_box max_price" value="{play_max_price}" /></td> <td> <div class="ex_radiobox showtype {check_3}" data-value="3">全部</div> <div class="ex_radiobox showtype {check_2}" data-value="2">仅手机</div> <div class="ex_radiobox showtype {check_1}" data-value="1">仅电脑</div> </td> <td><input type="text" class="ex_editor_box fandian" value="{fandian}" /></td> </tr>';
+
+                        //cur_gameid = gameid;
+                        $("#game_oddconfigs tbody").html("");
+                        if (!obj.data || obj.data.length == 0) {
+                            $("#game_oddconfigs tbody").html("<tr><td colspan='100%'>暂无相关数据...</td></tr>");
+                            return;
+                        }
+
+
+                        for(var k in obj.data) {
+                            var _head_wanfa = '';
+                            if (obj.data[k].configlist && obj.data[k].configlist.length > 0) {
+                                _head_wanfa = parseInt(obj.data[k].showofficial) == 0 ? 'offical' : 'believe';
+                                $("#game_oddconfigs tbody").append(_head_tpl.format({
+                                    menu_name: obj.data[k].name? obj.data[k].name: "未命名",
+                                    count: obj.data[k].configlist.length,
+                                    play_name: obj.data[k].configlist[0].playname,
+                                    playid: obj.data[k].configlist[0].playid,
+                                    play_min_price: obj.data[k].configlist[0].play_min_price,
+                                    play_max_price: obj.data[k].configlist[0].play_max_price,
+                                    fandian: obj.data[k].configlist[0].play_fandian,
+                                    check_1: parseInt(obj.data[k].configlist[0].showtype) == 1 ? 'checked' : '',
+                                    check_2: parseInt(obj.data[k].configlist[0].showtype) == 2 ? 'checked' : '',
+                                    check_3: parseInt(obj.data[k].configlist[0].showtype) == 3 ? 'checked' : '',
+                                    wanfatype: _head_wanfa,
+                                    tpl: obj.data[k].configlist[0].tpl
+                                }));
+
+                                // 循环遍历出其他元素
+                                for (var j = 1; j < obj.data[k].configlist.length; j++) {
+                                    $("#game_oddconfigs tbody").append(_body_tpl.format({
+                                        menu_name: obj.data[k].name? obj.data[k].name: "未命名",
+                                        play_name: obj.data[k].configlist[j].playname,
+                                        playid: obj.data[k].configlist[j].playid,
+                                        play_min_price: obj.data[k].configlist[j].play_min_price,
+                                        play_max_price: obj.data[k].configlist[j].play_max_price,
+                                        fandian: obj.data[k].configlist[j].play_fandian,
+                                        check_1: parseInt(obj.data[k].configlist[j].showtype) == 1 ? 'checked' : '',
+                                        check_2: parseInt(obj.data[k].configlist[j].showtype) == 2 ? 'checked' : '',
+                                        check_3: parseInt(obj.data[k].configlist[j].showtype) == 3 ? 'checked' : '',
+                                        wanfatype: _head_wanfa,
+                                        tpl: obj.data[k].configlist[j].tpl
+                                    }));
+                                }
+                            }
+                        }
+
+                        $("#game_oddconfigs tbody tr").hide();
+                        $("#game_oddconfigs tbody tr.wanfa_"+$(".wanfatype.checked").data("value")).show();
+                        cur_gameid = gameid;
+                        _self.bindEvent();
+                    });
+            }
+
+
+            // 保存当前的配置
+            function saveConfig() {
+                var configlist = [];
+                var haserror = false;
+
+                $("#game_oddconfigs tbody tr.change").each(function(){
+                    var _min_price = $(this).find(".min_price").val();
+                    var _max_price = $(this).find(".max_price").val();
+
+                    if (_min_price == '' || _max_price == '') {
+                        errshow("玩法: <a style='color:#f33'>"+$(this).find(".playname").text()+"</a> 赔率设置有误,请确认!");
+                        haserror= true;
+                        return;
+                    }
+                    if (_min_price.split("|").length != _max_price.split("|").length) {
+                        errshow("玩法: <a style='color:#f33'>"+$(this).find(".playname").text()+"</a> 赔率设置有误,请确认!");
+                        haserror = true;
+                        return;
+                    }
+
+
+                    configlist.push({
+                        ////---用于后台写入日志---////
+                        menu: $(this).data("menu"),
+                        wanfa: $(this).data("wanfa"),
+                        ////---用于后台写入日志---////
+
+                        playid: $(this).data("id"),
+                        min: _min_price,
+                        max: _max_price,
+                        stype: $(this).find(".showtype.checked").data("value"),
+                        fandian: $(this).find(".fandian").val(),
+                    });
+
+                });
+
+                if (haserror) {
+                    return;
+                }
+                if (configlist.length == 0) {
+                    errshow("赔率配置 没有变更!");
+                    return;
+                }
+
+                ///////////////////////////////////---用于后台写入日志---////////////////////////
+                var _game = $("#game_id_select").find(".game_"+cur_gameid).text();
+                ///////////////////////////////////---用于后台写入日志---////////////////////////
+
+                showLoading("正在保存设置...");
+                AjaxPost("/api/saveOddsConfig", {game: _game, gameid: cur_gameid, list: configlist},
+                    function(obj) {
+                        hideLoading();
+                        if (obj.msg > 0) {
+                            errshow(obj.param);
+                            return;
+                        }
+                        okshow("保存成功!");
+                        $("#game_oddconfigs tbody tr").removeClass("change");
+                    });
+            }
+
+            // 保存按钮
+            $(".btn_save").click(function(){
+                saveConfig();
+            });
+
+            // 默认选中第一个
+            getUI($("#game_id_select").val());
+            $("#game_id_select").change(function(){
+                //cur_gameid = $(this).val();
+                getUI($(this).val(), $(".game_"+$(this).val()).data("jstag"));
+            });
+
+            $(".wanfatype").click(function(){
+                if ($(this).hasClass("checked")) {
+                    return;
+                }
+                $(".ex_radiobox2").removeClass("checked");
+                $(this).addClass("checked");
+                $("#game_oddconfigs tbody tr").hide();
+                $("#game_oddconfigs tbody tr.wanfa_"+$(".wanfatype.checked").data("value")).show();
+            });
+        });
+    </script>
+</head>
+<body>
+
+<div class="Modulebox">
+    <div class="title">自动赔率设置</div>
+    <div class="search_area">
+        <div class="search_field">
+            游戏: <select class="ex_selector" style="width:140px;" id="game_id_select">
+
+            {volist name="gamelist" id="vo"}
+            <option value="{$vo.game_id}" data-jstag="{$vo.js_tag}" class="game_{$vo.game_id}">{$vo.game_name}</option>
+
+            {/volist}
+        </select>
+
+        </div>
+        <div class="search_field">
+            <div class="ex_radiobox2 wanfatype checked" data-value="offical">官方玩法</div>
+            <div class="ex_radiobox2 wanfatype" data-value="believe">信用玩法</div>
+        </div>
+        <div style="clear:both;"></div>
+    </div>
+    <div class="content" id="oddContainer">
+        <table class="ex_custom_table" id="game_oddconfigs">
+            <thead>
+            <tr>
+                <td width=100> 分类 </td>
+                <td width=100> 玩法 </td>
+                <td>最低赔率</td>
+                <td>最高赔率</td>
+                <td width="240">可见设备</td>
+                <td width="120">最高反水(%)</td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr><td colspan="100%">请查询...</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <div id="peilv_box_xglhc" style="display: none; width: 100%; height: 100%; background: rgba(1,1,1,0.12); position: fixed; left: 0; top: 0; z-index: 88;">
+        <div id="content_xglhc" class="touzhu_container">
+
+        </div>
+    </div>
+    <div style="height:60px; clear: both;"></div>
+    <div class="tools">
+        <a href="javascript:;" class="btn_save">保存设置</a>
+    </div>
+    <include file="plugin/tipshow" />
+</body>
+</html>

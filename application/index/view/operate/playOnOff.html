@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv=X-UA-Compatible content="IE=edge,chorme=1">
+    <title>玩法管理</title>
+    <style>
+        *{ margin:0px; padding:0px; }
+        #datalist{margin-top:7px;}
+        #datalist .ex_radiobox{ margin:0 3px; margin-bottom:5px;}
+    </style>
+    <link rel="stylesheet" href="__PUBLIC__css/global.css" rel='stylesheet' type='text/css'>
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/bf.core.js"></script>
+    <script type="text/javascript" src="/static/js/hsy.core.js"></script>
+    <script src="/static/js/page.js"></script>
+    <script>
+
+
+    </script>
+</head>
+<body>
+
+{include file="public/tipshow"}
+
+
+<style>
+    .search_box{width:600px; margin:0 auto}
+    .userlist {border:1px solid #ccc; padding:2px 0; height:300px; overflow-y:auto  }
+    .userlist .user{text-align:center; cursor:default; padding:2px 0}
+    .userlist .user:hover{background:#ccc}
+    .clearFloat{clear:both}
+    .search_box .left{width:50%;border-right:1px solid #ccc; box-sizing: content-box; float: left;height:100%;overflow-y:auto  }
+    .search_box .right{width:49%;box-sizing: content-box; float: left;height:100%;overflow-y:auto  }
+    .Modulebox {margin-top: 15px;margin-left: 20px;}
+    .Modulebox .search_field {float: left;margin: 6px}
+</style>
+<div class="Modulebox no_select">
+    <div class="search_area">
+        <div class="search_field">
+            彩种分类: <select class="ex_selector" style="width:80px;" id="game_select">
+            <!--<option value="">全部</option>-->
+            <option value="ssc">时时彩</option>
+            <option value="pk10">PK拾</option>
+            <option value="k3">快三</option>
+            <option value="11x5">十一选五</option>
+            <option value="pcdd">PC蛋蛋</option>
+            <option value="lhc">六合彩</option>
+            <option value="3d">3D</option>
+        </select>
+        </div>
+        <div class="search_field">
+            游戏: <select class="ex_selector" style="width:140px;" id="game_id_select" >
+
+            {volist name="gamelist" id="vo"}
+            <option value="{$vo.game_id}" data-jstag="{$vo.js_tag}" class="game_{$vo.game_id}">{$vo.game_name}</option>
+
+            {/volist}
+        </select>
+
+        </div>
+        <div class="search_field">
+            玩法:<input type="text"  class="ex_editor_box" placeholder="请输入玩法关键字" id="tag_search" />
+        </div>
+        <div class="search_field">
+            <div class="ex_btn_search" id="search">查询</div>
+        </div>
+    </div>
+</div>
+<div class="ex_mask" id="dialog_edit_user">
+    <div class="_dialog">
+        <div class="_title"><span>我是标题</span><div class="ex_close_btn"></div></div>
+        <div class="search_box">
+            业主 ： <div class="ex_click_btn" id="all" data-type="0">全选</div>
+            <span>双击选择</span><input style="float: right;margin-top: 2px" type="checkbox" id="js_tag_checkbox"  value="" /><span style="float: right">按彩种</span>
+        </div>
+        <div class="search_box userlist">
+
+            <div class="left">
+
+                {volist name="userlist" id="vo"}
+                <div class="user" data-id="{$vo.id}" >{$vo.username}</div>
+                {/volist}
+            </div>
+            <div class="right">
+            </div>
+            <div class="clearFloat"></div>
+        </div>
+        <div class="_tools"><a href="javascript:;" id="edit_start" class="ex_click_btn">开启玩法</a>
+            <a href="javascript:;" id="edit_stop" class="ex_click_btn">关闭玩法</a>
+            <!--<a href="javascript:;" class="ex_click_btn ex_close_btn">关闭</a>-->
+        </div>
+    </div>
+</div>
+<div id="datalist">
+    <table class="ex_custom_table">
+        <thead>
+        <tr><th>ID</th><th>彩种图标</th><th>彩种名称</th><th>每日期数</th><th>开奖频率</th><th>停盘时间</th><th>今日开奖次数</th><th>今日总盈利</th><th>操作</th></tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td colspan="100%">没有任何数据</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+
+<!-- 返回对话框 -->
+<div class="ex_mask" id="dialog_user_info" >
+    <div class="_dialog" style="width: 1000px">
+        <div class="_title"><span>我是标题</span><div class="ex_close_btn"></div></div>
+        <div class="_content">
+            <table class="ex_custom_table ex_dialog_table left" id="dialog_info">
+                <tr>
+                    <td class="left">编号</td>
+                    <td>业主</td>
+                </tr>
+
+            </table>
+        </div>
+        <!--<div class="_tools"><a href="javascript:;" class="ex_click_btn">保存</a><a href="javascript:;" class="ex_click_btn ex_close_btn">关闭</a></div>-->
+    </div>
+</div>
+
+
+<script>
+    var port_list= sessionStorage.getItem('port_list')?JSON.parse(sessionStorage.getItem('port_list')):false;
+    function getDataList(keywords){
+        var head = '<tr><th>ID</th><th>玩法列别</th><th>玩法名称</th><th>玩法名称</th> <th>彩种玩法</th><th>操作</th></tr>';
+        var body = '<tr data-idx="{_idx}"><td>{playid}</td><td>{name}</td><td>{wanfa}</td><td>{playname}</td><td>{play_title}</td><td>{edit}</td></tr></tr>';
+        var prepData = function(data){
+            if(port_list){
+                var port_edit= port_list == "all"? 1: port_list.port[40001];//设置玩法开关
+            }else{
+                var port_edit=false;
+            }
+
+            for(var i in data){
+                // data[i]['rolename'] = roleInfo[data[i]['accesstype']] == undefined ? "未知角色" : roleInfo[data[i]['accesstype']]['name'];
+                if(port_edit){
+                    data[i]['edit'] = "<a class=\"icon user_api_edit\"><i class=\"icon_edit\"></i>编辑</a>";
+                }else{
+                    data[i]['edit'] ="--"
+                }
+            }
+            return data;
+        }
+        var bindEvent = function(_obj){
+
+            //编辑
+            $('.user_api_edit').unbind('click').click(function(){
+                var id = $(this).parents('tr').data('idx');
+                var o = _obj.getDataById(id);
+                var _game_id = o.game_id; // 用户id
+                var wanfa = o.wanfa;
+                if(o.locked == 0){
+                    o.status = '<b style="color:red">维护中</b>';
+                }else{
+                    o.status = '<b style="color:green">正常</b>';
+                }
+
+                showDialog('dialog_edit_user',wanfa,'',function(){
+                    // var parentDOM=$("#dialog_edit_user");
+                    outPutDOM($('#dialog_edit_user'),o,'post_');
+                    // user_name.value= o.username;
+
+                    // 保存按钮
+                    $('._tools .ex_click_btn').unbind('click').click(function(){
+                        var userid='';
+                        $('.right .user').each(function(i,o){
+                            if(userid != ''){
+                                userid += '|'
+                            }
+                            userid += $(o).data('id')
+                        })
+                        var callback = function(obj){
+                            if(obj.data== '' ){
+                                //全部设置成功
+                                hideDialog('dialog_edit_user')
+                            }else{
+                                //显示设置失败的
+
+                                outPutDOM($('#dialog_user_info'),o,'post_');
+                                showDialog('dialog_user_info','设置玩法失败信息','',function(){
+
+                                    // 功能按钮
+                                    var str='<tr><td class="left">编号</td><td>业主</td><td>game</td><td>玩法</td><td>状态</td><td>原因</td></tr>';
+                                    for ( i in obj.data){
+                                        for(j in obj.data[i]){
+                                            str+='<tr><td class="left">'+i+'</td><td>'+ obj.data[i][j].username+'</td><td>'+ obj.data[i][j].gamename+'</td><td>'+wanfa+'</td><td>'+ obj.data[i][j].status+'</td><td>'+ obj.data[i][j].param+'</td></tr>';
+                                        }
+                                    }
+                                    $("#dialog_info").html(str)
+                                });
+                            }
+
+                        }
+                        var status= $(this).attr('id') == 'edit_start'?0:1 ;
+
+                            var tag=  js_tag_checkbox.checked==true?$("#game_select").val():''
+
+
+                        AjaxPost("/api/setPlayOnOff",{gameid:o.gameid,tag:tag,playid:o.playid,disable:status,idlist:userid},callback);
+                    })
+
+                });
+
+            })
+
+        }
+        new pageTable($('#datalist'),'/Operate/playlist',{keywords:keywords,gid:$("#game_id_select").val(),tag:($("#game_select").val()||$("#game_id_select").attr('data_jstag'))},head,body,bindEvent,prepData);
+    }
+    $(function(){
+        getDataList();
+        $(document).on('dblclick','.userlist .left .user',function(){
+            var html = $(this).prop('outerHTML');
+            var id = $(this).data('id');
+            $('.userlist .right').append(html);
+            $(this).remove();
+        })
+        $(document).on('dblclick','.userlist .right .user',function(){
+            var html = $(this).prop('outerHTML');
+            $('.userlist .left').append(html);
+            $(this).remove();
+        })
+        // 全部
+        $('#all').click(function(){
+            if($(this).data('type') == 0){
+                $('.userlist .right').append($('.userlist .left').html());
+                $('.userlist .left').html('');
+                $(this).data('type',1)
+                $(this).text("取消")
+            }else{
+                $('.userlist .left').append($('.userlist .right').html());
+                $('.userlist .right').html('');
+                $(this).data('type',0)
+                $(this).text("全选")
+            }
+        })
+
+        $("#search").click(function(){
+            getDataList($("#tag_search").val());
+        });
+        $("#game_id_select").change(function(){
+            getDataList();
+        });
+        $("#game_select").change(function(){
+
+            var gametag = $(this).val();console.log(gametag)
+           var gametype= $("#game_id_select option")
+            var  k=0;
+            $("#game_id_select option").hide()
+            for(var i=0;i<gametype.length;i++){
+               if(gametype.eq(i).data("jstag")==gametag){
+                  $("#game_id_select option").eq(i).show()
+                   if(k==0){
+                       $("#game_id_select").val(i+1);k=1;
+                   }
+               }else{
+                   $("#game_id_select option").eq(i).hide()
+               }
+
+            }
+
+
+            getDataList();
+        });
+    })
+</script>
+</html>

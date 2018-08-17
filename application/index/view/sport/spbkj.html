@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>体彩补开奖</title>
+    <link rel="stylesheet" href="__PUBLIC__css/global.css" rel='stylesheet' type='text/css'>
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/bf.core.js"></script>
+    <script type="text/javascript" src="/static/js/hsy.core.js"></script>
+    <script src="/static/js/page.js"></script>
+    <style>
+        .result_setting{width: 500px;height: 0;margin: 20px;}
+
+        .result_setting .ex_custom_table tr td{width: 180px;}
+        .result_setting .ex_custom_table tr td:last-of-type{width: 180px;}
+        .result_setting .ex_custom_table tr td:nth-of-type(1){width: auto;}
+        .result_setting .ex_custom_table tr td input[type=number]{width: 90%;text-align: center;border-radius: 0px;}
+        .ex_btn_search{padding: 4px 5px;}
+    </style>
+</head>
+<body>
+<div class="result_setting">
+
+    <table class="ex_custom_table" >
+        <thead>
+        <tr><td>皇冠赛事ID</td><td colspan="2"><input type="number" id="gid"  placeholder="请输入皇冠赛事ID" /></td></tr>
+        <tr>
+            <td colspan="3">赛果设置</td>
+        </tr>
+        </thead>
+        <tbody id="champion_select_area">
+
+        </tbody>
+        <tbody>
+        <tr><td colspan="3"><a class="ex_btn_search" id="setting_result">选择业主</a></td></tr>
+        </tbody>
+    </table>
+
+</div>
+{include file="public/tipshow"}
+<include file="plugin/tipshow" />
+<style>
+    .search_box{width:600px; margin:0 auto}
+    .userlist {border:1px solid #ccc; padding:2px 0; height:300px; overflow-y:auto  }
+    .userlist .user{text-align:center; cursor:default; padding:2px 0}
+    .userlist .user:hover{background:#ccc}
+    .clearFloat{clear:both}
+    .search_box .left{width:50%;border-right:1px solid #ccc; box-sizing: content-box; float: left;height:100%;overflow-y:auto  }
+    .search_box .right{width:49%;box-sizing: content-box; float: left;height:100%;overflow-y:auto  }
+    .Modulebox {margin-top: 15px;margin-left: 20px;}
+    .Modulebox .search_field {float: left;margin: 6px}
+</style>
+<div class="ex_mask" id="dialog_edit_user">
+    <div class="_dialog">
+        <div class="_title"><span>我是标题</span><div class="ex_close_btn"></div></div>
+        <div class="search_box">
+            业主 ： <div class="ex_click_btn" id="all" data-type="0">全选</div>
+            <span>双击选择</span>
+        </div>
+        <div class="search_box userlist">
+
+            <div class="left">
+
+                {volist name="userlist" id="vo"}
+                <div class="user" data-id="{$vo.id}" >{$vo.username}</div>
+                {/volist}
+            </div>
+            <div class="right">
+            </div>
+            <div class="clearFloat"></div>
+        </div>
+        <div class="_tools"><a href="javascript:;" id="edit_start" class="ex_click_btn">开始</a>
+            <a href="javascript:;"  class="ex_close_btn ex_click_btn">关闭</a>
+            <!--<a href="javascript:;" class="ex_click_btn ex_close_btn">关闭</a>-->
+        </div>
+    </div>
+</div>
+<!--返回对话框-->
+<div class="ex_mask" id="dialog_user_info" >
+    <div class="_dialog" style="width: 1000px">
+        <div class="_title"><span>我是标题</span><div class="ex_close_btn"></div></div>
+        <div class="_content">
+            <table class="ex_custom_table ex_dialog_table left" id="dialog_info">
+                <tr>
+                    <td class="left">编号</td>
+                    <td>业主</td>
+                </tr>
+
+            </table>
+        </div>
+        <!--<div class="_tools"><a href="javascript:;" class="ex_click_btn">保存</a><a href="javascript:;" class="ex_click_btn ex_close_btn">关闭</a></div>-->
+    </div>
+</div>
+</body>
+</html>
+<script>
+    $(function () {
+        $(document).on('dblclick','.userlist .left .user',function(){
+            var html = $(this).prop('outerHTML');
+            var id = $(this).data('id');
+            $('.userlist .right').append(html);
+            $(this).remove();
+        })
+        $(document).on('dblclick','.userlist .right .user',function(){
+            var html = $(this).prop('outerHTML');
+            $('.userlist .left').append(html);
+            $(this).remove();
+        })
+        // 全部
+        $('#all').click(function(){
+            if($(this).data('type') == 0){
+                $('.userlist .right').append($('.userlist .left').html());
+                $('.userlist .left').html('');
+                $(this).data('type',1)
+                $(this).text("取消")
+            }else{
+                $('.userlist .left').append($('.userlist .right').html());
+                $('.userlist .right').html('');
+                $(this).data('type',0)
+                $(this).text("全选")
+            }
+        })
+        //批量设置赛果
+        $('#setting_result').click(function(){
+            showDialog('dialog_edit_user','批量写入赛果','',function(){
+                // 保存按钮
+                $('#edit_start').unbind('click').click(function(){
+                    var type="get";
+                    var _gid=$("#gid").val();
+                    if($(".champions").length>0 ||$("#h_q1").length>0){
+                        type="set";
+                        _gid=$("#data_gid").html();
+                    }
+                    var userid='';
+                    $('.right .user').each(function(i,o){
+                        if(userid != ''){
+                            userid += '|'
+                        }
+                        userid += $(o).data('id')
+                    })
+                    var callback = function(obj){
+                        if(obj.data== '' ){
+                            //全部设置成功
+                            hideDialog('dialog_edit_user')
+                        }else{
+                           if(type=="get"){
+                               $(".ex_close_btn").click()
+                               var str="<tr><td>赛事联盟</td><td colspan='2'>"+obj.data.league_name+"</td></tr>"
+                               var str_m="<tr><td>赛事</td><td colspan='2'>"+obj.data.home_name+"</td></tr>"
+                                if(obj.data.home_name!==obj.data.visitor_name){
+                                    var str_m="<tr><td>赛事</td><td colspan='2'>"+obj.data.home_name +"(主)&nbsp;<b style='color: red'>vs</b>&nbsp;"+obj.data.visitor_name+"(客)</td></tr>"
+                                }
+                               str+=str_m;
+                                   str+="<tr><td>开始时间</td><td colspan='2'>"+ obj.data.begintime+"</td></tr>"
+                                  str+="<tr><td>皇冠ID</td><td colspan='2' id='data_gid'>"+ obj.data.gid+"</td></tr>"
+                               if(obj.data.game_type==4){
+                                   str+="<tr><td colspan='3'>冠军候选项</td></tr>"
+                                   var bet_data=JSON.parse(obj.data.bet_data)
+                                   if(Array.isArray(bet_data["CHP"])){
+                                       for(var i=0;i<bet_data["CHP"].length;i++ ){
+                                           if(i%2==0){
+                                               str+="<tr><td > <input class='champions' type='checkbox' datavalue='"+bet_data["CHP"][i]["k"]+"' />"+ bet_data["CHP"][i]["k"]+"</td>"
+                                           }else {
+                                               str+="<td colspan='2'><input  class='champions' type='checkbox' datavalue='"+bet_data["CHP"][i]["k"]+"' />"+ bet_data["CHP"][i]["k"]+"</td></tr>"
+                                           }
+
+                                       }
+                                   }
+                               }else{
+                                   if(obj.data.sport_id==2001){
+                                       str+="<tr><td></td><td>主队</td><td>客队</td></tr>"
+                                       str+=" <tr>\n" +
+                                           "            <td> 开场 ~ 14:59</td>\n" +
+                                           "            <td><input type=\"number\" class=\"result_value\" id=\"h_q1\"  value=\"0\" /></td>\n" +
+                                           "            <td><input type=\"number\" class=\"result_value\" id=\"v_q1\" value=\"0\" /></td>\n" +
+                                           "        </tr>\n" +
+                                           "        <tr>\n" +
+                                           "            <td> 15:00 ~ 29:59</td>\n" +
+                                           "            <td><input type=\"number\" class=\"result_value\" id=\"h_q2\" value=\"0\" /></td>\n" +
+                                           "            <td><input type=\"number\" class=\"result_value\" id=\"v_q2\" value=\"0\" /></td>\n" +
+                                           "        </tr>\n" +
+                                           "        <tr>\n" +
+                                           "            <td> 30:00 ~ 中场</td>\n" +
+                                           "            <td><input type=\"number\" class=\"result_value\" id=\"h_q3\" value=\"0\" /></td>\n" +
+                                           "            <td><input type=\"number\" class=\"result_value\" id=\"v_q3\" value=\"0\" /></td>\n" +
+                                           "        </tr>\n" +
+                                           "        <tr>\n" +
+                                           "            <td> 中场 ~ 59:59</td>\n" +
+                                           "            <td><input type=\"number\" class=\"result_value\" id=\"h_q4\" value=\"0\" /></td>\n" +
+                                           "            <td><input type=\"number\" class=\"result_value\" id=\"v_q4\" value=\"0\" /></td>\n" +
+                                           "        </tr>\n" +
+                                           "        <tr>\n" +
+                                           "            <td> 60:00 ~ 74:59</td>\n" +
+                                           "            <td><input type=\"number\" class=\"result_value\" id=\"h_q5\" value=\"0\" /></td>\n" +
+                                           "            <td><input type=\"number\" class=\"result_value\" id=\"v_q5\" value=\"0\" /></td>\n" +
+                                           "        </tr>\n" +
+                                           "        <tr>\n" +
+                                           "            <td> 75:00 ~ 全场</td>\n" +
+                                           "            <td><input type=\"number\" class=\"result_value\" id=\"h_q6\" value=\"0\" /></td>\n" +
+                                           "            <td><input type=\"number\" class=\"result_value\" id=\"v_q6\" value=\"0\" /></td>\n" +
+                                           "        </tr>\n" +
+                                           "        <tr>\n" +
+                                           "            <td> 上半场</td>\n" +
+                                           "            <td><input type=\"number\" class=\"result_value\" id=\"h_HTG\" value=\"\" /></td>\n" +
+                                           "            <td><input type=\"number\" class=\"result_value\" id=\"v_HTG\" value=\"\" /></td>\n" +
+                                           "        </tr>\n" +
+                                           "        <tr>\n" +
+                                           "            <td> 全场</td>\n" +
+                                           "            <td><input type=\"number\" class=\"result_value\" id=\"h_TG\" value=\"\" /></td>\n" +
+                                           "            <td><input type=\"number\" class=\"result_value\" id=\"v_TG\" value=\"\" /></td>\n" +
+                                           "        </tr>"
+
+                                   }
+                               }
+
+
+                               $("#champion_select_area").html(str)
+
+                           }else{
+                               showDialog('dialog_user_info','赛果设置信息','',function(){
+                                   // 功能按钮
+                                   var str='<tr><td class="left">编号</td><td>业主</td><td>状态</td><td>原因</td></tr>';
+                                   for ( i in obj.data){
+
+                                       str+='<tr><td class="left">'+i+'</td><td>'+ obj.data[i].username+'</td><td>'+ obj.data[i].status+'</td><td>'+ obj.data[i].param+'</td></tr>';
+
+                                   }
+                                   $("#dialog_info").html(str)
+                               });
+                           }
+
+                        }
+
+                    }
+
+
+                     var bool=true;
+                    if(_gid==""){
+                        toast("请检查的皇冠赛事ID！");
+                        return;``
+                    }
+                    $(".result_value").each(function () {
+                        if($(this).val()==""){
+                            toast("请检查填入的赛果内容！");
+                            bool=false
+                            return;
+                        }
+                    })
+                  if(!bool){
+                      return;
+                  }
+                  if($(".champions").length>0){
+                      var champions=[]
+                      $(".champions:checked").each(function () {
+                          champions.push({"k":$(this).attr("datavalue")})
+                      })
+                      var result_data={ "CHP":champions }
+                  }else{
+                      var result_data={ "SC":{
+                              "H":{
+                                  "q1":$("#h_q1").val(),
+                                  "q2":$("#h_q2").val(),
+                                  "q3":$("#h_q3").val(),
+                                  "q4":$("#h_q4").val(),
+                                  "q5":$("#h_q5").val(),
+                                  "q6":$("#h_q6").val(),
+                                  "HTG":$("#h_HTG").val(),
+                                  "TG":$("#h_TG").val()
+                              },
+                              "V":{
+                                  "q1":$("#v_q1").val(),
+                                  "q2":$("#v_q2").val(),
+                                  "q3":$("#v_q3").val(),
+                                  "q4":$("#v_q4").val(),
+                                  "q5":$("#v_q5").val(),
+                                  "q6":$("#v_q6").val(),
+                                  "HTG":$("#v_HTG").val(),
+                                  "TG":$("#v_TG").val()
+                              }
+                          }
+
+                      }
+                  }
+                    // {\"CHP\":[{\"k\":\"托尼.克罗斯\"},{\"k\":\"马尔科.罗伊斯\"}]}
+
+
+                    AjaxPost("/api/spSetChampionResult",{type:type,gid:_gid,result_data:JSON.stringify(result_data),idlist:userid},callback);
+                })
+            });
+        })
+
+    })
+
+
+</script>

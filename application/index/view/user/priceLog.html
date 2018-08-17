@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv=X-UA-Compatible content="IE=edge,chorme=1">
+    <title>现金明细</title>
+    <style>
+        *{ margin:0px; padding:0px; }
+        #datalist{margin-top:7px;}
+        #datalist .ex_radiobox{ margin:0 3px; margin-bottom:5px;}
+    </style>
+    <link rel="stylesheet" href="__PUBLIC__css/global.css" rel='stylesheet' type='text/css'>
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/bf.core.js"></script>
+    <script type="text/javascript" src="/static/js/hsy.core.js"></script>
+    <script type="text/javascript" src='/static/laydate/laydate.js'></script>
+    <script src="/static/js/page.js"></script>
+    <script>
+
+
+    </script>
+</head>
+<body>
+
+{include file="public/tipshow"}
+
+
+<style>
+    .search_box{width:600px; margin:0 auto}
+    .userlist {border:1px solid #ccc; padding:2px 0; height:300px; overflow-y:auto  }
+    .userlist .user{text-align:center; cursor:default; padding:2px 0}
+    .userlist .user:hover{background:#ccc}
+    .clearFloat{clear:both}
+    .search_box .left{width:50%;border-right:1px solid #ccc; box-sizing: content-box; float: left;height:100%;overflow-y:auto  }
+    .search_box .right{width:49%;box-sizing: content-box; float: left;height:100%;overflow-y:auto  }
+    .Modulebox {margin-top: 15px;margin-left: 20px;}
+    .Modulebox .search_field {float: left;margin: 6px}
+    a.list_icon { width:20px; height:28px; display:inline-block; vertical-align: middle;}
+    a.list_icon.icon_web { background:url('__PUBLIC__icon/icon_web.png') CENTER CENTER NO-REPEAT; background-size:16px 16px; }
+    a.list_icon.icon_wap { background:url('__PUBLIC__icon/icon_wap.png') CENTER CENTER NO-REPEAT; background-size:16px 16px; }
+    a.list_icon.icon_android { background:url('__PUBLIC__icon/icon_android.png') CENTER CENTER NO-REPEAT; background-size:16px 16px; }
+    a.list_icon.icon_ios { background:url('__PUBLIC__icon/icon_ios.png') CENTER CENTER NO-REPEAT; background-size:16px 16px; }
+</style>
+<div class="Modulebox no_select">
+    <div class="search_area">
+        <div class="search_field">
+            业主: <select class="ex_selector" style="width:80px;" id="user_select">
+                        {volist name="userlist" id="vo"}
+                        <option value="{$vo.id}">{$vo.username}</option>
+                        {/volist}
+                </select>
+        </div>
+        <div class="search_field">
+            日期: <input class="ex_date_editor  ex_editor_box" id="search_date_begin" value="{:date('Y-m-d')}" type="text" readonly="readonly" /> -
+            <input class="ex_date_editor ex_editor_box" value="{:date('Y-m-d')}" id="search_date_end" type="text" readonly="readonly" value="" />
+        </div>
+
+
+        <div class="search_field">
+            交易类型: <select class="ex_selector" style="width:80px;" id="status_select">
+                <option value="0">全部</option>
+                <option value="{:TTYPE_ALL_PAY}">充值</option>
+                <option value="{:TTYPE_TZ_OK}">投注</option>
+                <option value="{:TTYPE_TK_OK}">提款</option>
+                <option value="{:TTYPE_TZ_WIN}">中奖</option>
+                <option value="{:TTYPE_EV_ODD}">活动</option>
+            </select>
+        </select>
+        </div>
+
+        <div class="search_field">
+            用户帐号:<input type="text" id="username" class="ex_editor_box" />
+        </div>
+        <div class="search_field">
+            订单号:<input type="text" id="zhudan" class="ex_editor_box" />
+        </div>
+        <div class="search_field">
+            <div class="ex_btn_search" id="search">查询</div>
+        </div>
+    </div>
+</div>
+
+<div class="ex_mask" id="dialog_edit_user">
+    <div class="_dialog">
+        <div class="_title"><span>我是标题</span><div class="ex_close_btn"></div></div>
+        <div class="search_box">
+            业主 ： <div class="ex_click_btn" id="all" data-type="0">全选</div>
+            <span>双击选择</span>
+        </div>
+        <div class="search_box userlist">
+
+            <div class="left">
+
+                {volist name="userlist" id="vo"}
+                <div class="user" data-id="{$vo.id}" >{$vo.username}</div>
+                {/volist}
+            </div>
+            <div class="right">
+            </div>
+            <div class="clearFloat"></div>
+        </div>
+        <div class="_tools"><a href="javascript:;" id="edit_start" class="ex_click_btn">开启玩法</a>
+            <a href="javascript:;" id="edit_stop" class="ex_click_btn">关闭玩法</a>
+        </div>
+    </div>
+</div>
+<div id="datalist">
+    <table class="ex_custom_table">
+        <thead>
+        <tr><th>订单号</th><th>用户账号</th><th>投注时间</th><th>彩种名称</th><th>期数</th><th>投注类型</th><th>玩法</th><th>投注详情</th><th>开奖号码</th><th>注数</th><th>投注金额</th><th>中奖金额</th><th>赔率</th><th>退水</th><th>状态</th><th>平台</th><th>版本号</th></tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td colspan="100%">没有任何数据</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    var port_list= sessionStorage.getItem('port_list')?JSON.parse(sessionStorage.getItem('port_list')):false;
+    var game_list={$gamelist};
+    var _utype_str=[]
+        _utype_str[parseInt("1")] = "默认层";
+        _utype_str[parseInt("6")] = "第一层";
+        _utype_str[parseInt("2")] = "第二层";
+        _utype_str[parseInt("5")] = "无优惠";
+        _utype_str[parseInt("4")] = "黑名单";
+        _utype_str[parseInt("3")] = "测试层";
+
+   var stype=eval({$trad_type})
+   // console.log(stype)
+    function getDataList(ac){
+        var head = '<tr><th>ID</th><th>订单号</th><th>交易时间</th><th>用户名</th><th>用户层级</th><th>交易类型</th><th>交易金额</th><th>交易前金额</th><th>交易后金额</th><th>备注</th><th>设备类型</th><th>状态</th></tr>';
+        var body = '<tr data-idx="{_idx}"><td>{guid}</td><td><b>{dingdan}</b></td><td>{time}</td><td>{username}</td><td>{user_type}</td><td>{actype_str}</td><td>{price_str}</td><td>{price_old_str}</td><td>{price_new_str}</td><td>{comment}</td><td>{client_type_str}</td><td>{status}</td></tr></tr>';
+        var _status_str = [];
+        _status_str[0] = "<a style='color:#999;'>未开奖</a>";
+        _status_str[1] = "<a style='color:#911;'>开奖中</a>";
+        _status_str[2] = "<a style='color:#f33;'>未中奖</a>";
+        _status_str[3] = "<a style='color:#090;'>已中奖</a>";
+        _status_str[4] = "<a style='color:#119;'>已撤单</a>";
+        var _client = ["<a class='list_icon icon_web'></a>", "<a class='list_icon icon_wap'></a>", "<a class='list_icon icon_android'></a>", "<a class='list_icon icon_ios'></a>"];
+        var prepData = function(data){
+            if(port_list){
+                var port_edit= port_list == "all"? 1: port_list.port[30001];
+            }else{
+                var port_edit=false;
+            }
+            var d =new Date();
+
+              for(var i in data){
+                if (data[i].status == 1) {
+                    data[i].status ="<a style='color: #0A9909'>正常</a>"
+                }else{
+                    data[i].status ="<a style='color: #ff0000'>异常</a>"
+                }
+                for(var j=0;j<stype.length;j++){
+                      if(stype[j]['type'] == data[i].type){
+                          data[i].actype_str = stype[j].name;
+                          for(var k=0;k<stype[j].sub_type.length;k++){
+                              if(stype[j].sub_type[k] == data[i].sub_type){
+                                  data[i].actype_str += "--"+stype[j].sub_type[k].name
+                              }
+                          }
+                      }
+
+                  }
+
+                  if(data[i].comment.length>20){
+                      data[i].comment_str=data[i].comment
+                      data[i].comment="<p class='hover_show'>"+data[i].comment.substr(0,15)+"……<div class='hover_show_box' style='display: none'>"+data[i].comment_str+"</div></p>"
+                  }
+                  data[i].user_type = _utype_str[parseInt(data[i].user_type)];
+
+                  // data[i].trad_type =  stype[parseInt(data[i].sub_type)];
+                data[i].client_type_str = _client[parseInt(data[i].client_type)];
+                data[i].price = _parseFloat(data[i].price, 2);
+                  data[i].price_str = "<a class='price' style='color:#f66;'>"+_parseFloat(data[i].price,2)+"</a>";
+                  data[i].price_old_str = "<a style='color:#999;'>"+_parseFloat(data[i].price_old,2)+"</a>";
+                  data[i].price_new_str = "<a style='color:#090;'>"+_parseFloat(data[i].price_new,2)+"</a>";
+                  data[i]['time'] = d._format("{y}-{m}-{d} {h}:{i}:{s}",data[i]['pay_time'])
+            }
+            return data;
+        }
+        var bindEvent = function(_obj){
+            var page_price=0
+            var it=$(".price")
+            for(var k=0;k<it.length;k++){
+                page_price += Number(it.eq(k).html())*100
+            }
+            page_price = _parseFloat(page_price/100, 2);
+           $('.total').remove();
+            $("#datalist table tbody").append("<tr class='total' style='background: wheat'><td>统计</td><td></td><td></td><td></td><td></td><td></td><td>"+page_price+"/"+(Number(_obj.param.price).toFixed(2))+"</td><td colspan='5'></td></tr>")
+
+            $(".hover_show").hover(function () {
+
+               var tip= $(this).parent().find("div").eq(0)
+                tip.attr("style","position:absolute;background:wheat;z-index:66;margin:5px;")
+
+            },function () {
+                var tip= $(this).parent().find("div").eq(0)
+                tip.attr("style","display:none")
+            })
+        }
+          if(ac==undefined){
+              ac={
+                  id:$('#user_select').val(),
+                  btime:search_date_begin.value,
+                  etime:search_date_end.value,
+                  username:$('#username').val(),
+                  type:$('#status_select').val(),
+                  order:$("#zhudan").val()
+              };
+          }else{
+              ac=JSON.parse(ac)
+              $("#user_select").val(ac.id)
+              $("#search_date_begin").val("")
+              $("#username").val(ac.username)
+          }
+
+        new pageTable($('#datalist'),'/api/getMenberTradLog',ac,head,body,bindEvent,prepData);
+
+    }
+    $(function(){
+        if(sessionStorage.getItem('priceLog')){
+            getDataList(sessionStorage.getItem('priceLog'));
+            sessionStorage.removeItem('priceLog')
+        }
+
+        //laydate
+        laydate({elem: '#search_date_begin'});
+        laydate({elem: '#search_date_end'});
+
+        $(document).on('dblclick','.userlist .left .user',function(){
+            var html = $(this).prop('outerHTML');
+            var id = $(this).data('id');
+            $('.userlist .right').append(html);
+            $(this).remove();
+        })
+        $(document).on('dblclick','.userlist .right .user',function(){
+            var html = $(this).prop('outerHTML');
+            $('.userlist .left').append(html);
+            $(this).remove();
+        })
+        // 全部
+        $('#all').click(function(){
+            if($(this).data('type') == 0){
+                $('.userlist .right').append($('.userlist .left').html());
+                $('.userlist .left').html('');
+                $(this).data('type',1)
+                $(this).text("取消")
+            }else{
+                $('.userlist .left').append($('.userlist .right').html());
+                $('.userlist .right').html('');
+                $(this).data('type',0)
+                $(this).text("全选")
+            }
+        })
+
+
+        $("#game_id_select").change(function(){
+            getDataList();
+        });
+        $("#game_select").change(function(){
+
+            var gametag = $(this).val();console.log(gametag)
+           var gametype= $("#game_id_select option")
+            var  k=0;
+            $("#game_id_select option").hide()
+            for(var i=0;i<gametype.length;i++){
+               if(gametype.eq(i).data("jstag")==gametag){
+                  $("#game_id_select option").eq(i).show()
+                   if(k==0){
+                       $("#game_id_select").val(i+1);k=1;
+                   }
+               }else{
+                   $("#game_id_select option").eq(i).hide()
+               }
+
+            }
+
+
+            getDataList();
+        });
+
+
+
+        $("#search").click(function () {
+            getDataList();
+        })
+    })
+</script>
+</html>

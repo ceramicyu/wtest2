@@ -1,0 +1,1527 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>业主列表	&#9654;</title>
+	<style>
+		*{padding:0; margin:0; font-family: Consolas, "Liberation Mono", Courier, "微软雅黑"; font-size:14px;}
+	</style>
+	<link rel="stylesheet" href="__PUBLIC__css/global.css" rel='stylesheet' type='text/css'>
+	<script type="text/javascript" src="/static/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/static/js/UploadSimpleFile.js"></script>
+	<script type="text/javascript" src="/static/js/bf.core.js"></script>
+	<script type="text/javascript" src="/static/js/hsy.core.js"></script>
+	<script src="/static/js/page.js"></script>
+</head>
+<body>
+{include file="public/tipshow"}
+<div class="search_box">
+	<div class="search_item">
+		业主:<input type="text" id="username" class="ex_editor_box" />
+	</div>
+	<div class="search_item">
+		状态:
+		<select class="ex_selector" id="status">
+			<option selected value="0">全部</option>
+			<option value="1">审核中</option>
+			<option value="2">测试站</option>
+			<option value="3">正式站</option>
+		</select>
+	</div>
+	<div class="search_item">
+		域名:
+		<input type="text" id="url" class="ex_editor_box" />
+	</div>
+	<div class="search_item">
+		<div class="ex_btn_search" id="add" style="display: none">新增</div>
+	</div>
+	<div class="search_item">
+		<div class="ex_btn_search" id="search">查询</div>
+	</div>
+
+	<div class="search_item">
+		<div class="ex_btn_search" id="system_working" style="display: none">平台维护</div>
+	</div>
+</div>
+<div id="datalist">
+	<table class="ex_custom_table">
+		<thead>
+		<tr><th>编号</th><th>名字</th><th>代号</th><th>开网时间</th><th>后台域名</th><th>主域名</th><th>状态</th><th>操作</th></tr>
+		</thead>
+		<tbody>
+		<tr>
+			<td colspan="100%">没有任何数据</td>
+		</tr>
+		</tbody>
+	</table>
+</div>
+<!-- 添加对话框 -->
+<div class="ex_mask" id="dialog_add_user">
+	<div class="_dialog">
+		<div class="_title"><span>我是标题</span><div class="ex_close_btn"></div></div>
+		<div class="_content">
+			<table class="ex_dialog_table ">
+				<tr>
+					<td width="100">业主</td>
+					<td><input type="text" data-post="post_username" data-vtype="notnull" data-vtip="请输入业主名字" class="ex_editor_box" placeholder="请输入业主名字"></td>
+					<td>请输入业主名字</td>
+				</tr>
+				<tr>
+					<td width="100">后台地址</td>
+					<td><input type="text" data-post="post_admin_url" data-vtype="url" data-vtip="域名不合法" class="ex_editor_box" placeholder="请输入业主域名地址"></td>
+					<td>请输入业主后台域名</td>
+				</tr>
+				<tr>
+					<td width="100">前台地址</td>
+					<td><input type="text" data-post="post_index_url" data-vtype="url" data-vtip="域名不合法" class="ex_editor_box" placeholder="请输入业主域名地址"></td>
+					<td>请输入业主后台域名</td>
+				</tr>
+				<tr>
+					<td width="100">website</td>
+					<td><input type="text" data-post="post_website" data-vtype="alphaNum"  data-vtip="website不合法" class="ex_editor_box" placeholder="请输入业主website"></td>
+					<td>请输入业主website</td>
+				</tr>
+				<tr>
+					<td width="100">备注</td>
+					<td><input type="text" data-post="post_remark" class="ex_editor_box" placeholder="请输入业主备注"></td>
+					<td>请输入备注</td>
+				</tr>
+			</table>
+		</div>
+		<div class="_tools"><a href="javascript:;" id="save" class="ex_click_btn">保存</a><a href="javascript:;" class="ex_click_btn ex_close_btn">关闭</a></div>
+	</div>
+</div>
+<!-- 修改对话框 -->
+<div class="ex_mask" id="dialog_edit_user">
+	<div class="_dialog">
+		<div class="_title"><span>我是标题</span><div class="ex_close_btn"></div></div>
+		<div class="_content">
+			<table class="ex_dialog_table ">
+				<tr>
+					<td width="100">编号</td>
+					<td><input disabled type="text" data-post="post_id" data-vtype="notnull" data-vtip="请输入业主名字" class="ex_editor_box " placeholder="请输入业主名字"></td>
+				</tr>
+				<tr>
+					<td width="100">业主</td>
+					<td><input disabled type="text" data-post="post_username" data-vtype="notnull" data-vtip="请输入业主名字" class="ex_editor_box " placeholder="请输入业主名字"></td>
+				</tr>
+				<tr>
+					<td width="100">后台地址</td>
+					<td><input type="text" data-post="post_admin_url" data-vtype="url" data-vtip="域名不合法" class="ex_editor_box" placeholder="请输入业主域名地址"></td>
+				</tr>
+				<tr>
+					<td width="100">前台地址</td>
+					<td><input type="text" data-post="post_index_url" data-vtype="url" data-vtip="域名不合法" class="ex_editor_box" placeholder="请输入业主域名地址"></td>
+				</tr>
+				<tr>
+					<td width="100">website</td>
+					<td><input type="text" data-post="post_website" data-vtype="alphaNum"  data-vtip="website不合法" class="ex_editor_box" placeholder="请输入业主website"></td>
+				</tr>
+				<tr>
+					<td width="100">备注</td>
+					<td><input type="text" data-post="post_remark" class="ex_editor_box" placeholder="请输入业主备注"></td>
+				</tr>
+			</table>
+		</div>
+		<div class="_tools"><a href="javascript:;" id="edit_save" class="ex_click_btn">保存</a><a href="javascript:;" class="ex_click_btn ex_close_btn">关闭</a></div>
+	</div>
+</div>
+<!-- 功能对话框 -->
+<div class="ex_mask" id="dialog_user_info">
+	<div class="_dialog">
+		<div class="_title"><span>我是标题</span><div class="ex_close_btn"></div></div>
+		<div class="_content">
+			<table class="ex_dialog_table left">
+				<tr>
+					<td class="left">名字</td>
+					<td data-post="post_username"></td>
+					<td>website</td>
+					<td  data-post="post_website"></td>
+				</tr>
+				<tr>
+					<td class="left">总注册人数</td>
+					<td data-post="post_reg"></td>
+					<td class="left">当前在线</td>
+					<td data-post="post_online"></td>
+				</tr>
+				<tr>
+					<td class="left">后台域名</td>
+					<td data-post="post_admin_url"></td>
+					<td>前台域名</td>
+					<td data-post="post_index_url"></td>
+				</tr>
+				<tr>
+					<td class="left">添加时间</td>
+					<td data-post="post_create_time"></td>
+					<td class="left">状态</td>
+					<td data-post="post_status"></td>
+				</tr>
+				<tr>
+					<td class="left">备注</td>
+					<td data-post="post_remark"></td>
+				</tr>
+
+				<!-- 功能块 -->
+				<tr>
+					<td colspan="100%" class="icon_list"><a class="ex_click_btn" data-link="dialog_thrid_shop" data-title="第三方审核">第三方审核</a>
+						<a class="ex_click_btn" data-title="第三方审核" data-link="dialog_domain_list">域名列表</a>
+						<a class="ex_click_btn" data-title="赔率审核" data-link="dialog_peilv_list">赔率审核</a>
+					</td>
+				</tr>
+
+			</table>
+		</div>
+		<!--<div class="_tools"><a href="javascript:;" class="ex_click_btn">保存</a><a href="javascript:;" class="ex_click_btn ex_close_btn">关闭</a></div>-->
+	</div>
+</div>
+
+<!-- 第三方审核列表 -->
+<div class="ex_mask" id="dialog_thrid_shop">
+	<div class="_dialog" style="width:700px">
+		<div class="_title"><span>我是标题</span><div class="ex_close_btn"></div></div>
+		<div class="_search">
+			商户：<input type="text" class="ex_editor_box" id="shop_code" placeholder="请输入商户名字/code">
+			<select class="ex_selector" id="select_thrid_shop">
+				<option value="-1">全部</option>
+				<option value="0">正常</option>
+				<option value="1">待审核</option>
+				<option value="2">异常</option>
+				<option value="3">审核不通过</option>
+			</select>
+			<a class="icon" id="search_thrid_shop"><i class="icon_search"></i>查询</a>
+		</div>
+		<div class="_content">
+			<table class="ex_custom_table">
+
+			</table>
+		</div>
+		<div class="_tools"><a href="javascript:;" class="ex_click_btn ex_close_btn">关闭</a></div>
+	</div>
+</div>
+
+<!-- 第三方查看详情 -->
+<div class="ex_mask" id="dialog_thrid_detail">
+	<div class="_dialog" style="width:700px">
+		<div class="_title"><span>我是标题</span><div class="ex_close_btn"></div></div>
+		<div class="_content">
+			<table class="ex_custom_table">
+				<tr>
+					<td width="120">商户名字</td>
+					<td class="left" data-post="post_pay_name"></td>
+				</tr>
+				<tr>
+					<td>商户code</td>
+					<td class="left"  data-post="post_code"></td>
+				</tr>
+				<tr>
+					<td width="120">商户状态</td>
+					<td class="left" data-post="post_zhuangtai"></td>
+				</tr>
+				<tr>
+					<td>商户ID</td>
+					<td class="left"  data-post="post_shop_id"></td>
+				</tr>
+				<tr>
+					<td>商户秘钥</td>
+					<td class="left"  data-post="post_api_key"></td>
+				</tr>
+				<tr>
+					<td>支付网关</td>
+					<td class="left"  data-post="post_pay_url"></td>
+				</tr>
+				<tr>
+					<td>查询网关</td>
+					<td class="left"  data-post="post_query_url"></td>
+				</tr>
+				<tr>
+					<td>商户域名</td>
+					<td class="left"  data-post="post_shop_url"></td>
+				</tr>
+				<tr>
+					<td>最小充值金额</td>
+					<td class="left"  data-post="post_min_price"></td>
+				</tr>
+				<tr>
+					<td>最大充值金额</td>
+					<td class="left"  data-post="post_max_price"></td>
+				</tr>
+				<tr>
+					<td>备注</td>
+					<td class="left"  data-post="post_mark"></td>
+				</tr>
+				<tr>
+					<td>扩展参数</td>
+					<td class="left"  data-post="post_extend"></td>
+				</tr>
+				<tbody id="keys">
+					<tr class="private">
+						<td>私钥</td>
+						<td class="left" ><div style="width:100%;height:100px; overflow-y:auto" data-post="post_private_key"></div></td>
+					</tr>
+					<tr class="public">
+						<td>公钥</td>
+						<td class="left" ><div style="width:100%;height:100px; overflow-y:auto" data-post="post_public_key"></div></td>
+					</tr>
+					<tr class="other">
+						<td>商户公钥</td>
+						<td class="left" ><div style="width:100%;height:100px; overflow-y:auto;word-break: break-all;" data-post="post_other_key"></div></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="_tools"><a href="javascript:;" class="ex_click_btn ex_close_btn">关闭</a></div>
+	</div>
+</div>
+
+<!-- 第三方拒绝审核通过 -->
+<div class="ex_mask" id="dialog_thrid_refuse">
+	<div class="_dialog"  style="width:300px">
+		<div class="_title"><span>我是标题</span><div class="ex_close_btn"></div></div>
+		<div class="_content">
+			<table class="ex_dialog_table">
+				<tr>
+					<td width="80">拒绝理由</td>
+					<td><div contenteditable="true" class="reason" style="width:100%;height:50px;border:1px solid #A6C8ff"></div></td>
+				</tr>
+			</table>
+		</div>
+		<div class="_tools"><a href="javascript:;" class="ex_click_btn sure">确定</a><a href="javascript:;" class="ex_click_btn ex_close_btn">关闭</a></div>
+	</div>
+</div>
+
+<!--维护设置-->
+<div class="ex_mask" id="dialog_setwebstatus">
+	<div class="_dialog" style="width:500px">
+		<div class="_title"><span>是否开启维护</span><div class="ex_close_btn"></div></div>
+		<div class="_content">
+			<table class="ex_custom_table">
+				<tr>
+					<td>开始时间</td>
+					<td><input type="datetime-local" class="btime"></td>
+					<td>维护的开始时间</td>
+				</tr>
+				<tr>
+					<td>结束时间</td>
+					<td><input type="datetime-local" class="etime"></td>
+					<td>维护的结束时间</td>
+				</tr>
+				<tr>
+					<td>维护原因</td>
+					<td><input type="text" class="ex_editor_box reason"></td>
+					<td>维护原因</td>
+				</tr>
+				<tr>
+					<td>tips</td>
+					<td><input type="text" class="ex_editor_box tips"></td>
+					<td>tips</td>
+				</tr>
+			</table>
+		</div>
+		<div class="_tools"><a href="javascript:;" id="setStatus" class="ex_click_btn">确定</a><a href="javascript:;" class="ex_click_btn ex_close_btn">取消</a></div>
+	</div>
+</div>
+
+<!--删除总后台的业主信息询问框-->
+<div class="ex_mask" id="dialog_user_del">
+	<div class="_dialog" style="width:500px">
+		<div class="_title"><span>是否删除</span><div class="ex_close_btn"></div></div>
+		<div class="_content">
+		</div>
+		<div class="_tools"><a href="javascript:;" class="ex_click_btn sure">确定</a><a href="javascript:;" class="ex_click_btn ex_close_btn">取消</a></div>
+	</div>
+</div>
+
+<!-- 赔率审核列表 -->
+<div class="ex_mask" id="dialog_peilv_list">
+    <div class="_dialog" style="width:1200px">
+        <div class="_title"><span>我是标题</span><div class="ex_close_btn"></div></div>
+        <div class="_search">
+
+            彩种:
+            <select class="ex_selector" id="gameid">
+				<option value="" data-jstag="" >全部</option>
+				{volist name="gamelist" id="vo"}
+				<option value="{$vo.game_id}" data-jstag="{$vo.js_tag}" class="game_{$vo.game_id}">{$vo.game_name}</option>
+
+				{/volist}
+            </select>
+			状态:
+			<select class="ex_selector" id="peilv_status">
+				<option value="-1">全部</option>
+				<option value="3">未审核</option>
+				<option value="4">审核通过</option>
+				<option value="5">未通过</option>
+			</select>
+
+
+            <a class="icon" id="search_peilv"><i class="icon_search"></i>查询</a>
+        </div>
+        <div class="_content">
+            <table class="ex_custom_table">
+            </table>
+        </div>
+        <div class="_tools"><a href="javascript:;" class="ex_click_btn ex_close_btn">关闭</a></div>
+    </div>
+</div>
+<!-- 赔率审核查看详情 -->
+<div class="ex_mask" id="dialog_peilv_detail">
+	<div class="_dialog" style="width:840px">
+		<div class="_title"><span>我是标题</span><div class="ex_close_btn"></div></div>
+		<div class="_content">
+			<table class="ex_custom_table">
+
+				<tr>
+					<td>彩种:</td>
+					<td  width="250" class="left"  data-post="post_gamename"></td>
+					<td width="120">玩法:</td>
+					<td  width="250" class="left" data-post="post_playname"></td>
+				</tr>
+				<tr>
+					<td width="120">最低赔率(旧):</td>
+					<td   class="left" data-post="post__old_min_price" style="width: 200px;word-break: break-all"></td>
+					<td width="120">最高赔率(旧):</td>
+					<td  width="250" class="left" data-post="post__old_max_price" style="width: 200px;word-break: break-all"></td>
+				</tr>
+				<tr>
+					<td width="120">最低赔率(新):</td>
+					<td class="left" data-post="post__play_min_price" style="width: 200px;word-break: break-all"></td>
+					<td width="120">最高赔率(新):</td>
+					<td class="left" data-post="post__play_max_price" style="width: 200px;word-break: break-all"></td>
+				</tr>
+				<tr>
+					<td>显示设备(旧):</td>
+					<td class="left"  data-post="post__old_show_type"></td>
+					<td width="120">最高反水(旧)(%):</td>
+					<td class="left" data-post="post_old_fandian"></td>
+				</tr>
+				<tr>
+					<td>显示设备(新):</td>
+					<td class="left"  data-post="post__show_type"></td>
+					<td width="120">最高反水(新)(%):</td>
+					<td class="left" data-post="post_play_fandian"></td>
+				</tr>
+				<tr>
+					<td width="120">审核状态:</td>
+					<td class="left" data-post="post__status"></td>
+					<td width="120">备注:</td>
+					<td class="left" data-post="post_remark"></td>
+				</tr>
+				<tr>
+					<td width="120">添加时间:</td>
+					<td class="left" data-post="post_create_time"></td>
+					<td width="120">更细时间：</td>
+					<td class="left" data-post="post_update_time"></td>
+				</tr>
+			</table>
+		</div>
+		<div class="_tools"><a href="javascript:;" class="ex_click_btn ex_close_btn">关闭</a></div>
+	</div>
+</div>
+<!-- 域名审核列表 -->
+<div class="ex_mask" id="dialog_domain_list">
+	<div class="_dialog" style="width:1200px">
+		<div class="_title"><span>我是标题</span><div class="ex_close_btn"></div></div>
+		<div class="_search">
+			域名: <input type="text" class="ex_editor_box" id="domain_enom">
+			账户: <input type="text" class="ex_editor_box" id="domain_username">
+			状态:
+			<select class="ex_selector" id="domain_status">
+				<option value="-1">全部</option>
+				<option value="0">未审核</option>
+				<option value="1">股东审核</option>
+				<option value="2">总代理审核</option>
+				<option value="3">业主审核</option>
+				<option value="4">审核通过</option>
+				<option value="5">审核未通过</option>
+			</select>
+			邀请码:
+			<select class="ex_selector" id="domain_param_type">
+				<option value="-1">全部</option>
+				<option value="0">不填</option>
+				<option value="1">必填</option>
+			</select>
+			注册类型:
+			<select class="ex_selector" id="domain_type">
+				<option value="-1">全部</option>
+				<option value="0">会员</option>
+				<option value="1">代理</option>
+			</select>
+			APP专用:
+			<select class="ex_selector" id="app_status">
+				<option value="-1">全部</option>
+				<option value="0">否</option>
+				<option value="1">是</option>
+			</select>
+			<a class="icon" id="search_enom"><i class="icon_search"></i>查询</a>
+		</div>
+		<div class="_content">
+			<table class="ex_custom_table">
+			</table>
+		</div>
+		<div class="_tools"><a href="javascript:;" class="ex_click_btn ex_close_btn">关闭</a></div>
+	</div>
+</div>
+<!-- 域名审核拒绝审核通过 -->
+<div class="ex_mask" id="dialog_domain_refuse">
+    <div class="_dialog"  style="width:300px">
+        <div class="_title"><span>我是标题</span><div class="ex_close_btn"></div></div>
+        <div class="_content">
+            <table class="ex_dialog_table">
+                <tr>
+                    <td width="80">拒绝理由</td>
+                    <td><div contenteditable="true" class="reason" style="width:100%;height:50px;border:1px solid #A6C8ff"></div></td>
+                </tr>
+            </table>
+        </div>
+        <div class="_tools"><a href="javascript:;" class="ex_click_btn sure">确定</a><a href="javascript:;" class="ex_click_btn ex_close_btn">关闭</a></div>
+    </div>
+</div>
+
+<!-- 域名查看详情 -->
+<div class="ex_mask" id="dialog_domain_detail">
+    <div class="_dialog" style="width:700px">
+        <div class="_title"><span>我是标题</span><div class="ex_close_btn"></div></div>
+        <div class="_content">
+            <table class="ex_custom_table">
+                <tr>
+                    <td width="120">域名:</td>
+                    <td class="left" data-post="post_enom"></td>
+                    <td width="120">用户:</td>
+                    <td class="left" data-post="post_username"></td>
+                </tr>
+                <tr>
+                    <td width="120">ip:</td>
+                    <td class="left" data-post="post_ip"></td>
+                    <td width="120">备注:</td>
+                    <td class="left" data-post="post_remark"></td>
+                </tr>
+                <tr>
+                    <td>启用:</td>
+                    <td class="left"  data-post="post_disable"></td>
+                    <td width="120">审核状态:</td>
+                    <td class="left" data-post="post__status"></td>
+                </tr>
+                <tr>
+                    <td width="120">添加时间:</td>
+                    <td class="left" data-post="post_time"></td>
+                    <td width="120">APP专用:</td>
+                    <td class="left" data-post="post_app_only_status"></td>
+                </tr>
+                <tr>
+                    <td>邀请码:</td>
+                    <td class="left"  data-post="post_param_type"></td>
+                    <td width="120">层级:</td>
+                    <td class="left" data-post="post_actype"></td>
+                </tr>
+                <tr>
+                    <td>手机LOGO:</td>
+                    <td class="left"  data-post="post_phone_logo"></td>
+                    <td width="120">层级:</td>
+                    <td class="left" data-post="post_actype"></td>
+                </tr>
+
+            </table>
+        </div>
+        <div class="_tools"><a href="javascript:;" class="ex_click_btn ex_close_btn">关闭</a></div>
+    </div>
+</div>
+<!--业主网站设置-->
+<style>
+	#dialog_websetting_detail  td {line-height: 38px}
+	#dialog_websetting_detail  td input {line-height: 24px;width: 95%}
+</style>
+<div class="ex_mask"  id="dialog_websetting_detail">
+	<div class="_dialog" style="width:1000px">
+		<div class="_title"><span>我是标题</span><div class="ex_close_btn"></div></div>
+		<div class="_content">
+			<table class="ex_custom_table">
+				<tr>
+					<td width="120">网站地址:</td>
+					<td class="left" ><input type="text"  data-post="post_website" placeholder="请输入网站地址"/></td>
+				</tr>
+				<tr>
+					<td width="120">网站标题:</td>
+					<td class="left"><input type="text"   data-post="post_web_title" placeholder="请输入网站标题" /></td>
+				</tr>
+				<tr>
+					<td width="120">网站关键词:</td>
+					<td class="left" ><input type="text"  data-post="post_web_keywords" placeholder="请输入网站关键词"  /></td>
+				</tr>
+				<tr>
+					<td width="120">电脑LOGO:</td>
+					<td class="left" data-post="post_website_title" valign="middle" >
+						<img style="width:300px; height:60px; background:#CCCCCC;" id="img_web_logo" data-post="post_pc_logo" src="" data-value="" data-link="" nerror="this.src=''">
+					</td>
+				</tr>
+				<tr>
+					<td>手机LOGO:</td>
+					<td class="left" valign="middle"  >
+						<img style="width:300px; height:60px; background:#CCCCCC;" id="img_phone_logo" data-post="post_phone_logo" src="" data-value="" data-link="" nerror="this.src=''">
+					</td>
+				</tr>
+				<tr>
+					<td width="120">上传地址:</td>
+					<td class="left" ><input type="text" disabled data-post="post_upload_url" placeholder="请输入上传地址" /></td>
+				</tr>
+				<tr>
+					<td>上传密钥:</td>
+					<td class="left"><input type="text" disabled data-post="post_upload_token" placeholder="请输入上传token" /></td>
+				</tr>
+				<tr>
+					<td width="120">APP标题:</td>
+					<td class="left" ><input type="text" disabled data-post="post_app_title"  placeholder="请输入APP的标题" /></td>
+				</tr>
+				<tr>
+					<td>APP详描述:</td>
+					<td class="left" ><input type="text" disabled data-post="post_app_description"  placeholder="请输入APP的描述" /></td>
+				</tr>
+				<tr>
+					<td width="120">网站描述:</td>
+					<td class="left" ><input type="text"  data-post="post_web_description" placeholder="请输入前端主页的描述" /></td>
+				</tr>
+				<tr>
+					<td>页脚描述:</td>
+					<td class="left" ><input type="text"  data-post="post_web_footer" placeholder="请输入前端页脚的描述" /></td>
+				</tr>
+				<tr>
+					<td>网站模板:</td>
+					<td class="left" ><input type="text"  data-post="post_view" value="" placeholder="请输入前端模板关键字" /></td>
+				</tr>
+			</table>
+			<!--<iframe width='1200' style="border: none;" height="600" src="../webConfig"></iframe>-->
+		</div>
+		<div class="_tools"><a href="javascript:;" class="ex_click_btn sure">确定</a><a href="javascript:;" class="ex_click_btn ex_close_btn">关闭</a></div>
+	</div>
+</div>
+<!--批量维护&#45;&#45;平台维护-->
+<style>
+	/*.search_box{width:600px; margin:0 auto}*/
+	.userlist {border:1px solid #ccc; padding:2px 0; height:300px; overflow-y:auto  }
+	.userlist .user{text-align:center; cursor:default; padding:2px 0}
+	.userlist .user:hover{background:#ccc}
+	.clearFloat{clear:both}
+	.search_box .left{width:50%;border-right:1px solid #ccc; box-sizing: content-box; float: left;height:100%;overflow-y:auto  }
+	.search_box .right{width:49%;box-sizing: content-box; float: left;height:100%;overflow-y:auto  }
+	/*.Modulebox {margin-top: 15px;margin-left: 20px;}*/
+	/*.Modulebox .search_field {float: left;margin: 6px}*/
+</style>
+<div class="ex_mask" id="dialog_system_working">
+	<div class="_dialog">
+		<div class="_title"><span>我是标题</span><div class="ex_close_btn"></div></div>
+		<div class="content_sys_time_setting"></div>
+		<div class="search_box">
+			业主 ： <div class="ex_click_btn" id="all" data-type="0">全选</div>
+			<span>双击选择</span>
+		</div>
+		<div class="search_box userlist">
+
+			<div class="left">
+
+				{volist name="userlist" id="vo"}
+				<div class="user" data-id="{$vo.id}" >{$vo.username}</div>
+				{/volist}
+			</div>
+			<div class="right">
+			</div>
+			<div class="clearFloat"></div>
+		</div>
+		<div class="_tools"><a href="javascript:;" id="edit_start" class="ex_click_btn">开启维护</a>
+			<a href="javascript:;" id="edit_stop" class="ex_click_btn">关闭维护</a>
+		</div>
+	</div>
+</div>
+<!-- 返回对话框 -->
+<div class="ex_mask" id="dialog_system_working_info">
+	<div class="_dialog">
+		<div class="_title"><span>我是标题</span><div class="ex_close_btn"></div></div>
+		<div class="_content">
+			<table class=" ex_dialog_table left ex_custom_table" id="dialog_info" >
+				<tr>
+					<td class="left">编号</td>
+					<td>业主</td>
+					<td>状态</td>
+					<td>原因</td>
+				</tr>
+
+			</table>
+		</div>
+		<div class="_tools"><a href="javascript:;" class="ex_click_btn ex_close_btn">关闭</a></div>
+	</div>
+</div>
+
+</div>
+
+</body>
+</html>
+<script>
+	$(function () {
+
+        simple = new UploadSimpleImage($("#img_web_logo"), "/upload/UploadWebLogo/id/"+sessionStorage.getItem('xxid'), function(data){
+            if (data.msg>0) {
+                errshow(data.param);
+                return;
+            }else{
+                $("#img_web_logo").attr("data-value",data.data)
+                console.log(data.data)
+			}
+        });
+        simple = new UploadSimpleImage($("#img_phone_logo"), "/upload/UploadPhoneLogo/id/"+sessionStorage.getItem('xxid'), function(data){
+            if (data.msg>0) {
+                errshow(data.param);
+                return;
+            }else{
+                $("#img_phone_logo").attr("data-value",data.data)
+			}
+        });
+    })
+</script>
+<script>
+	var _user_id = null;
+	var thrid_shop_list = {};
+    var port_list= {$port_list};
+    function getBtn(type,port,dom){    //根据权限获得功能按钮
+        if(type=='thrid'){
+            if(!port){
+                for(var i=0;i<dom.length;i++){
+                    if(dom[i].dataset.link=='dialog_thrid_shop'){
+                        dom[i].style.display='none';
+                    }
+                }
+            }
+		}else if(type=='enom'){
+            if(!port){
+                for(var i=0;i<dom.length;i++){
+                    if(dom[i].dataset.link=='dialog_domain_list'){
+                        dom[i].style.display='none';
+                    }
+                }
+            }
+		}
+
+
+	}
+    function getUserList(){
+        var param = {};
+        var head = '<tr><th>编号</th><th>名字</th><th>代号</th><th>开网时间</th><th>后台域名</th><th>主域名</th><th>是否维护</th><th>操作</th></tr>';
+        var body = '<tr data-idx="{_idx}"><td>{id}</td><td>{username}</td><td>{website}</td><td>{create_time}</td><td><a href="{admin_url}" target="_admin">{admin_url}</a></td><td><a href="{index_url}" target="_index">{index_url}</a></td><td>{setWebStatus}</td><td><a class="icon user_api"><i class="icon_search"></i>接口</a>{editapi}{user_del}{user_setting}</td></tr>';
+        var param = {};
+        param['url'] = $('#url').val();
+        param['status'] = $('#status').val();
+        param['username'] = $('#username').val();
+        var prepData = function(data){
+            if(port_list){
+                var port_thrid= port_list == "all"? 1: port_list.port[{$Think.API_USER_THRID}];//10001第三方审核(管理)
+                var port_enom= port_list == "all"? 1: port_list.port[{$Think.API_USER_ENOM}];//10002域名列表 (域名管理)
+                var port_delete= port_list == "all"? 1: port_list.port[{$Think.API_USER_DEL}];//10003业主删除
+                var port_edit= port_list == "all"? 1: port_list.port[{$Think.API_USER_EDIT}];//10004业主编辑
+                var port_add= port_list == "all"? 1: port_list.port[{$Think.API_USER_ADD}];//10005业主添加
+                var port_setWebStatus= port_list == "all"? 1: port_list.port[{$Think.API_USER_WEBSTATUS}]; //10006挂维护
+                var port_setting = port_list == "all"? 1: port_list.port[{$Think.API_USER_SETTING}];//10007业主网站设置
+			}else{
+                var port_setWebStatus=false;
+                var port_edit =false;
+                var port_delete =false;
+                var port_thrid =false;
+                var port_enom=false;
+                var port_add =false;
+                var port_setting =false;
+			}
+            var portBtn= $("#dialog_user_info").find('.icon_list a');
+            if(!port_add){
+                $("#add").hide()
+            }else{
+                $("#add").show()
+			}
+            getBtn('thrid',port_thrid,portBtn);getBtn('enom',port_enom,portBtn);
+
+            for(var i in data){
+                data[i]['open'] = data[i]['locked'] == 1 ?"open":"";
+                if(port_setWebStatus){
+                    $("#system_working").show()
+                    if(data[i]['locked'] == 1){
+                        data[i]['setWebStatus'] = "<div class='user ex_toggle_btn open'> <div class='toggle_trigger'></div> </div>";
+                    }else{
+                        data[i]['setWebStatus'] = "<div class='user ex_toggle_btn '> <div class='toggle_trigger'></div> </div>";
+                    }
+                }else{
+                    $("#system_working").hide()
+                    if(data[i]['locked'] == 1){
+                        data[i]['setWebStatus'] = "<div class='ex_toggle_btn open'> <div class='toggle_trigger'></div> </div>";
+                    }else{
+                        data[i]['setWebStatus'] = "<div class='ex_toggle_btn '> <div class='toggle_trigger'></div> </div>";
+                    }
+                }
+                if(port_edit){
+                    data[i]['editapi']="<a class=\"icon user_api_edit\"><i class=\"icon_edit\"></i>编辑</a>"
+                }else{
+                    data[i]['editapi'] =""
+                }
+                if(port_delete){
+                    data[i]['user_del']="<a class=\"icon user_del\"><i class=\"icon_del\"></i>删除</a>"
+                }else{
+                    data[i]['user_del'] =""
+                }
+                if(port_setting){
+                    data[i]['user_setting']="<a class=\"icon user_setting\"><i class=\"icon_setting\"></i>设置</a>"
+                }else{
+                    data[i]['user_setting'] =""
+                }
+
+			}
+            return data;
+        }
+        var bindEvent = function(_obj){
+			// 删除按钮
+			$('.user_del').unbind('click').click(function(){
+                var id = $(this).parents('tr').data('idx');
+                var data = _obj.getDataById(id);
+                if(!data){
+                    toast('业主信息错误');return;
+				}
+				var self_parents = $(this).parents('tr');
+				showDialog('dialog_user_del','确定删除<b style=\"color:#f33\">'+data.username+'</b>','',function(o){
+				    o.find('.sure').unbind('click').click(function(){
+                        AjaxPost('/user/delete',{id:data.id},function(){
+                            self_parents.remove();
+                            hideDialog('dialog_user_del');
+                        })
+					})
+				});
+			})
+           //业主网站设置
+            $('.user_setting').unbind('click').click(function(){
+
+                var id = $(this).parents('tr').data('idx');
+                var data = _obj.getDataById(id);
+                sessionStorage.setItem('xxid', data.id);
+                if(!data){
+                    toast('业主信息错误');return;
+                }
+                var self_parents = $(this).parents('tr');
+
+                 var _callback=function (obj) {console.log(obj)
+                     $("#img_web_logo").attr("data-link","http://upload.bxvip588.com/"+obj.data.website+"/Uploads/logo/")
+                     $("#img_phone_logo").attr("data-link","http://upload.bxvip588.com/"+obj.data.website+"/Uploads/logo/")
+                     showDialog('dialog_websetting_detail','<b style=\"color:#f33\">'+data.username+'</b>网站设置','',function(o){
+                         outPutDOM($('#dialog_websetting_detail'),obj.data,'post_');
+                      //   $("#img_web_logo").attr("src","http://upload.bxvip588.com/"+obj.data.website+"/Uploads/logo/"+obj.data.pc_logo)
+                       //  $("#img_phone_logo").attr("src","http://upload.bxvip588.com/"+obj.data.website+"/Uploads/logo/"+obj.data.phone_logo)
+
+                         o.find('.sure').unbind('click').click(function(){
+                             var ac= {   id:data.id,
+                                 website:$("input[data-post='post_website']").val(),
+                                 title: $("input[data-post='post_web_title']").val(),
+                                 web_keywords:$("input[data-post='post_web_keywords']").val(),
+                                 pc_logo:$("#img_web_logo").attr("data-value"),
+                                 phone_logo:$("#img_phone_logo").attr("data-value"),
+                                 upload_url:$("input[data-post='post_upload_url']").val(),
+                                 upload_token:$("input[data-post='post_upload_token']").val(),
+                                 app_title:$("input[data-post='post_app_title']").val(),
+                                 app_description:$("input[data-post='post_app_description']").val(),
+                                 web_description:$("input[data-post='post_web_description']").val(),
+                                 web_footer: $("input[data-post='post_web_footer']").val(),
+                                 view:$("input[data-post='post_view']").val()
+                             }
+
+                             // if(ac.view == obj.data.view || ac.webtitle == obj.data.web_title || 0){
+                              //    toast("未作任何改变");
+                              //    return;
+							 // }
+                             AjaxPost('/api/setWebConfig',ac,function(msg){
+                                 self_parents.remove();
+                                 if(msg.msg==0){
+                                     toast("设置成功！")
+								 }
+                                 hideDialog('dialog_websetting_detail');
+                                 getUserList();
+                             })
+                         })
+                     });
+                 }
+                AjaxPost("/api/getWebConfig",{id:data.id},_callback)
+			})
+
+            // 维护按钮
+			$('.user.ex_toggle_btn').unbind('click').click(function(){
+			    var self_obj = $(this);
+                var id = self_obj.parents('tr').data('idx');
+                var data = _obj.getDataById(id);
+                if(!data){
+                    toast('业主信息不正确');return;
+                }
+                if(self_obj.hasClass('open')){
+                    var _status = 0; // 关闭
+					var title = '您正在对业主：<b style="color:#f33">'+data.username+'</b>开启网站维护';
+                    $('#dialog_setwebstatus').find('._content .ex_custom_table').show();
+                }else{
+                    var _status = 1; // 开启
+                    var title = '您正在对业主：<b style="color:#f33">'+data.username+'</b>关闭网站维护';
+                    $('#dialog_setwebstatus').find('._content .ex_custom_table').hide();
+                }
+                var param = {};
+                param['id'] = data.id;
+                param['status'] = _status;
+			    showDialog('dialog_setwebstatus',title,false,function(o){
+			        o.find('#setStatus').unbind('click').click(function(){
+						if(_status == 0){
+							// 关闭维护
+							var btime = o.find('.btime').val();
+							var etime = o.find('.etime').val();
+							var reason = o.find('.reason').val();
+							var tips = o.find('.tips').val();
+							if(!btime){
+								toast('请选择维护的开始时间');return;
+							}
+							if(!etime){
+								toast('请选择维护的结束时间');return;
+							}
+							if(!reason){
+								toast('请输入维护的理由');return;
+							}
+							param['btime'] = btime;
+							param['reason'] = reason;
+							param['etime'] = etime;
+							param['tips'] = tips;
+						}
+						AjaxPost('/api/setWebStatus',param,function(obj){
+							if(_status == 0){
+								self_obj.removeClass("open");
+							}else{
+								self_obj.addClass('open');
+							}
+                            hideDialog('dialog_setwebstatus');
+						})
+                    })
+				})
+			})
+            // 接口编辑按钮
+            $('.user_api_edit').unbind('click').click(function(){
+                var id = $(this).parents('tr').data('idx');
+                var o = _obj.getDataById(id);
+                _user_id = o.id; // 用户id
+                var name = o.username;
+                if(o.locked == 0){
+                    o.status = '<b style="color:red">维护中</b>';
+                }else{
+                    o.status = '<b style="color:green">正常</b>';
+                }
+
+                showDialog('dialog_edit_user','修改业主信息','',function(){
+                    // var parentDOM=$("#dialog_edit_user");
+                    outPutDOM($('#dialog_edit_user'),o,'post_');
+                    // user_name.value= o.username;
+                    // 保存按钮
+                    $('#edit_save').unbind('click').click(function(){
+                        var callback = function(obj){
+                            hideDialog('dialog_edit_user')
+                            getUserList();
+                        }
+                        quickSubmit($('#dialog_edit_user'),"/user/edit",'','post_',callback);
+                    })
+                });
+
+            })
+			// 功能按钮
+			$('.user_api').unbind('click').click(function(){
+				var id = $(this).parents('tr').data('idx');
+				var o = _obj.getDataById(id);
+                _user_id = o.id; // 用户id
+				var name = o.username;
+				if(o.locked == 0){
+					o.status = '<b style="color:red">维护中</b>';
+				}else{
+                    o.status = '<b style="color:green">正常</b>';
+				}
+				// 获取在线人数跟注册人数
+				AjaxPost('/api/getUserInfo',{id:o.id},function(obj){
+				    if(obj.data.reg != undefined ){
+						o.reg = obj.data.reg;
+					}else{
+				        o.reg = 0;
+					}
+                    if(obj.data.online != undefined ){
+                        o.online = obj.data.online;
+                    }else{
+                        o.online = 0;
+                    }
+                    outPutDOM($('#dialog_user_info'),o,'post_');
+                    showDialog('dialog_user_info',name+'信息','',function(obj){
+                        // 功能按钮
+                        obj.find('.icon_list a').unbind('click').click(function(){
+                            var link = $(this).data('link');
+                            var _new = $(this).data('new');
+                            // 有链接存在的，  在父级界面打开
+                            if(link){
+                                if(_new){
+                                    // 当前页面就是父级界面
+                                    window.open('/'+link,link);
+                                }else{
+                                    if(link == 'dialog_thrid_shop'){
+                                        showThridShop(link,o.id);return;
+                                    }else if(link == 'dialog_domain_list'){
+                                        showDomainList(link,o.id);return;
+                                    }else if(link == 'dialog_peilv_list'){
+                                        showPeilvList(link,o.id,name);return;
+									}
+                                }
+                            }else{
+                                return;
+                            }
+                        })
+                    });
+				// })
+			})
+
+            })
+        }
+        new pageTable($('#datalist'),'/user/list',param,head,body,bindEvent,prepData);
+    }
+    //赔率审核列表
+			function chk(str) {
+				var patrn = /(\d+(\.\d+)?)/g;
+				var result=[]
+				result=str.match(patrn)
+				return result;
+			}
+    function showPeilvList(link,id,name){
+
+        var self = this;
+        this.init = function(){
+            var head = '<tr><td>id</td><td>彩种</td><td>玩法</td><td width="270">最低赔率(旧)</td><td width="270">最低赔率(新)</td><td>显示设备</td><td>最高反水(%)</td><td>状态</td><td>详细</td><td>操作</td></tr>';
+            var body = '<tr data-idx="{_idx}"><td>{id}</td><td>{gamename}</td><td>{playname}</td><td style="width: 200px;word-break: break-all;color:#ccc ">{_old_min_price}</td><td style="width: 200px;word-break: break-all;color:#aaa">{_play_min_price}</td><td>{_show_type}</td><td>{play_fandian}</td><td class="status">{_status}</td><td><a class="ex_click_btn showDetail">查看</a></td><td class="operate">{operate}</td></tr>';
+            var _status = ['<a style="color: #9B410E">未审核</a>','<a style="color: #9B410E">等待股东审核</a>','<a style="color: #9B410E">等待业主审核</a>','<a style="color:red">未审核</a>','<a style="color: green">审核通过</a>','<a style="color: red">已拒绝</a>'];
+            var _show_type=['--','<a style="color: #9B410E">仅电脑</a>','<a style="color: #9B410E">仅手机</a>','<a style="color: #9B410E">全部</a>']
+
+
+
+            var bindEvent = function(obj){
+                // 查看按钮  查看详情
+                $('#dialog_peilv_list .showDetail').unbind('click').click(function(){
+                    var id = $(this).parents('tr').data('idx');
+                    var data = obj.getDataById(id);
+                    outPutDOM($('#dialog_peilv_detail'),data,'post_');
+                    showDialog('dialog_peilv_detail','赔率<b style="color:#f33">'+data.id+'</b>详细信息');
+                })
+
+
+
+                // 审核通过
+                $('#dialog_peilv_list  .agree').unbind('click').click(function(){
+                    var _p = $(this).parents('tr');
+                    var id = _p.data('idx');
+                    var data = obj.getDataById(id);
+                    if(!data){
+                        toast('域名信息错误');return;
+                    }
+                    if(data['status'] == 4){
+                        toast('域名已经审核通过');return;
+                    }
+                    if(data['status'] == 5){
+                        toast('域名已经被拒绝');return;
+                    }
+
+                    AjaxPost('/api/setOdds',{odds_id:data.id,id:_user_id,status:1},function(o){
+                        _p.find('.status').html(_status[4]);
+                        _p.find('.operate').text("----");
+                    })
+                })
+                // 审核拒绝  需要填写拒绝理由
+                $('#dialog_peilv_list .refuse').unbind('click').click(function(){
+                    var _p = $(this).parents('tr');
+                    var id = _p.data('idx');
+                    var data = obj.getDataById(id);
+                    if(!data){
+                        toast('赔率信息错误');return;
+                    }
+                    if(data['status'] == 5){
+                        toast('赔率设置已经拒绝');return;
+                    }
+                    if(data['status'] == 4){
+                        toast('赔率已经审核通过');return;
+                    }
+                    showDialog('dialog_domain_refuse','您正在拒绝赔率<b style="color:red">'+data.id+'</b>','',function(o){
+                        o.find('.sure').click(function(){
+                            var _reason = o.find('.reason').text();
+                            // if(!_reason){
+                            //     toast("请输入拒绝理由");return;
+                            // }
+                            showLoading();
+                            AjaxPost('/api/setOdds',{odds_id:data.id,id:_user_id,status:0,remark:_reason},function(o){
+                                data.remark = _reason;
+                                data.status=0
+                                _p.find('.status').html(_status[5]);
+                                _p.find('.remark').html(_reason);
+                                _p.find('.operate').text("----");
+                                hideDialog('dialog_domain_refuse');
+                            })
+                        })
+                    })
+
+                })
+            }
+            var prepareData = function(data){
+
+                var d = new Date()
+				function peilvFomate(peilv) {
+                    if (peilv == undefined)
+                        return null
+                    var num=9
+					if(peilv.length > num){
+                        peilv=peilv.substr(0,num)
+					}
+					return peilv
+                }
+                function getMaxPrice(min_price){
+                    var price = parseFloat(min_price)
+                    return (price / 1.8) * 2
+				}
+                for(var i in data){
+                    if(data[i]['status'] == 3){
+                        // 需要审核
+                        data[i]['operate'] = '<a class="ex_click_btn agree">通过</a><a class="ex_click_btn refuse">拒绝</a>';
+                    }else{
+                        data[i]['operate'] = '----';
+                    }
+                    data[i]['_status'] = _status[data[i]['status']] == undefined ? _status[1]:_status[data[i]['status']];
+                    data[i]['create_time'] = d._format("{y}/{m}/{d} {h}:{i}:{s}",data[i]['create_time'])
+                    data[i]['update_time'] = d._format("{y}/{m}/{d} {h}:{i}:{s}",data[i]['update_time'])
+                    data[i]['_show_type']=_show_type[ data[i]['show_type']]
+                    data[i]['_old_show_type']=_show_type[ data[i]['old_show_type']]
+                    data[i]['old_fandian']=Number( data[i]['old_fandian']).toFixed(3)
+                    data[i]['_old_min_price']= data[i]['old_min_price']
+                    data[i]['_play_min_price']= data[i]['play_min_price']
+                    data[i]['_old_max_price']= data[i]['old_max_price']
+                    data[i]['_play_max_price']= data[i]['play_max_price']
+                    if( data[i]['play_min_price'] != undefined && data[i]['old_min_price'] != undefined && data[i]['play_max_price'] != undefined && data[i]['old_max_price'] != undefined
+					&& data[i]['play_min_price'] != '' && data[i]['old_min_price'] != ''
+
+                    ){
+                        var res1 =  chk(  data[i]['old_min_price'])
+                        var res2 = chk(  data[i]['play_min_price'])
+                        // var res3 =  chk(  data[i]['old_max_price'])
+                        // var res4= chk(  data[i]['play_max_price'])
+                        data[i]['_old_min_price']=''
+                        data[i]['_play_min_price']=''
+                        data[i]['_old_max_price']=''
+                        data[i]['_play_max_price']=''
+                        for(var x in res2){
+
+                            if( res1[x] != res2[x]){
+
+								if( Number(res1[x]) - Number(res2[x]) >0){
+                                    res2[x]="<b style='color: #11b35e;'>【"+peilvFomate(res2[x])+"】</b>"+""
+                                    // res4[x]="<b style='color: #11b35e;'>【"+peilvFomate(res4[x])+"】</b>"+""
+                                    var res4="<b style='color: #11b35e;'>【"+peilvFomate(getMaxPrice(res2[x]))+"】</b>"+""
+								}else{
+									res2[x]="<b style='color: red;'>【"+peilvFomate(res2[x])+"】</b>"+""
+                                    var res4="<b style='color: red;'>【"+peilvFomate(getMaxPrice(res2[x]))+"】</b>"+""
+                                    // res4[x]="<b style='color: red;'>【"+peilvFomate(res4[x])+"】</b>"+""
+								}
+
+                                res1[x]="<b style='color: blue'>【"+peilvFomate(res1[x])+"】</b>"+""
+                                // res3[x]="<b style='color: blue'>【"+peilvFomate(res3[x])+"】</b>"+""
+                                var res3="<b style='color: blue'>【"+peilvFomate(getMaxPrice(res1[x]))+"】</b>"+""
+                                data[i]['_old_min_price'] += res1[x]
+                                data[i]['_play_min_price'] += res2[x]
+                                data[i]['_old_max_price'] += res3
+                                data[i]['_play_max_price'] += res4
+                            }else{
+
+                                data[i]['_old_min_price'] += "【"+peilvFomate(res1[x])+"】"
+                                data[i]['_play_min_price'] +="【"+ peilvFomate(res2[x])+"】"
+                                data[i]['_old_max_price'] += "【"+peilvFomate(getMaxPrice(res1[x]))+"】"
+                                data[i]['_play_max_price'] +="【"+ peilvFomate(getMaxPrice(res2[x]))+"】"
+
+                            }
+                        }
+                    }
+
+
+                }
+                return data;
+            }
+            var param = {};
+            param['id'] = id;
+            param['status'] = $('#peilv_status').val();
+            param['gameid'] = $('#gameid').val();
+
+            new pageTable($('#dialog_peilv_list ._content'),'/api/peilvlist',param,head,body,bindEvent,prepareData);
+        }
+        this.initData = function(){
+            $('#dialog_domain_list ._content .ex_custom_table').html('');
+            $('#dialog_domain_list ._content .pagination').remove();
+        };
+        showDialog(link,name+'赔率列表','',function(_obj){
+            self.init();
+            // 查询按钮
+            $('#search_peilv').unbind('click').click(function(){
+                self.init();
+            })
+            self.initData();
+        })
+    }
+    function showDomainList(link,id){
+        var self = this;
+        this.init = function(){
+            var head = '<tr><td>id</td><td>域名</td><td>ip</td><td>拥有者</td><td>添加时间</td><td>邀请码</td><td>状态</td><td>APP专用</td><td>备注</td><td>详细</td><td>操作</td></tr>';
+            var body = '<tr data-idx="{_idx}"><td>{id}</td><td>{enom}</td><td>{ip}</td><td>{username}</td><td>{time}</td><td>{param_type_str}</td><td class="status">{_status}</td><td>{app_only_status}</td><td class="remark">{remark}</td><td><a class="ex_click_btn showDetail">查看</a></td><td class="operate">{operate}</td></tr>';
+            var _status = ['<a style="color: #9B410E">未审核</a>','<a style="color: #9B410E">等待股东审核</a>','<a style="color: #9B410E">等待业主审核</a>','<a style="color:red">等待总后台审核</a>','<a style="color: green">审核通过</a>','<a style="color: red">已拒绝</a>'];
+            var _param_code = ['不填','必填'];
+            var _app_status = ["否","<a style='color:green'>是</a>"];
+            var _actype = ['会员','股东','总代'];
+            var bindEvent = function(obj){
+                // 查看按钮  查看详情
+                $('#dialog_domain_list .showDetail').unbind('click').click(function(){
+                    var id = $(this).parents('tr').data('idx');
+                    var data = obj.getDataById(id);
+                    console.log(data);
+                    outPutDOM($('#dialog_domain_detail'),data,'post_');
+                    showDialog('dialog_domain_detail','域名<b style="color:#f33">'+data.enom+'</b>详细信息');
+                })
+
+
+
+                // 审核通过
+                $('#dialog_domain_list  .agree').unbind('click').click(function(){
+                    var _p = $(this).parents('tr');
+                    var id = _p.data('idx');
+                    var data = obj.getDataById(id);
+                    if(!data){
+                        toast('域名信息错误');return;
+                    }
+                    if(data['status'] == 4){
+                        toast('域名已经审核通过');return;
+                    }
+                    if(data['status'] == 5){
+                        toast('域名已经被拒绝');return;
+                    }
+                  
+                    AjaxPost('/api/setEnomStatus',{enom:data.enom,id:_user_id,status:1,param_type:data.param_type},function(o){
+                        _p.find('.status').html(_status[4]);
+                        _p.find('.operate').text("----");
+                    })
+                })
+                // 审核拒绝  需要填写拒绝理由
+                $('#dialog_domain_list .refuse').unbind('click').click(function(){
+                    var _p = $(this).parents('tr');
+                    var id = _p.data('idx');
+                    var data = obj.getDataById(id);
+                    if(!data){
+                        toast('域名信息错误');return;
+                    }
+                    if(data['status'] == 5){
+                        toast('域名已经拒绝');return;
+                    }
+                    if(data['status'] == 4){
+                        toast('域名已经审核通过');return;
+                    }
+                    showDialog('dialog_domain_refuse','您正在拒绝域名<b style="color:red">'+data.enom+'</b>','',function(o){
+                        o.find('.sure').click(function(){
+                            var _reason = o.find('.reason').text();
+                            if(!_reason){
+                                toast("请输入拒绝理由");return;
+                            }
+                            showLoading();
+                            AjaxPost('/api/setEnomStatus',{enom:data.enom,id:_user_id,status:0,remark:_reason},function(o){
+                                data.remark = _reason;
+                                _p.find('.status').html(_status[5]);
+                                _p.find('.remark').html(_reason);
+                                _p.find('.operate').text("----");
+                                hideDialog('dialog_domain_refuse');
+                            })
+                        })
+                    })
+
+                })
+            }
+            var prepareData = function(data){
+
+                var d = new Date()
+                for(var i in data){
+                    if(data[i]['status'] == 3 ||data[i]['status'] == 2||data[i]['status'] == 1||data[i]['status'] == 0){
+                        // 需要审核
+                        data[i]['operate'] = '<a class="ex_click_btn agree">通过</a><a class="ex_click_btn refuse">拒绝</a>';
+                    }else{
+                        data[i]['operate'] = '----';
+                    }
+                    data[i]['_status'] = _status[data[i]['status']] == undefined ? _status[1]:_status[data[i]['status']];
+					data[i]['time'] = d._format("{y}/{m}/{d} {h}:{i}:{s}",data[i]['time'])
+                    data[i]['param_type_str'] = _param_code[data[i]['param_type']] == undefined ? _param_code[0]:_param_code[data[i]['param_type']];
+                    data[i]['app_only_status'] = _app_status[data[i]['app_only_status']] == undefined ? _app_status[0]:_app_status[data[i]['app_only_status']];
+                    if(data[i]['actype'] < 3){
+						data[i]['actype'] = _actype[data[i]['actype']]
+					}else{
+                        data[i]['actype'] = (data[i]['actype'] - 2)+"级代理";
+					}
+                }
+                return data;
+            }
+            var param = {};
+            param['id'] = id;
+            param['status'] = $('#domain_status').val();
+            param['param_type'] = $('#domain_param_type').val();
+            param['type'] = $('#domain_type').val();
+//            param['disable'] = $('#domain_disable').val();
+            param['username'] = $('#domain_username').val();
+            param['enom'] = $('#domain_enom').val();
+            new pageTable($('#dialog_domain_list ._content'),'/api/domainlist',param,head,body,bindEvent,prepareData);
+		}
+        this.initData = function(){
+            $('#dialog_domain_list ._content .ex_custom_table').html('');
+            $('#dialog_domain_list ._content .pagination').remove();
+        };
+        showDialog(link,'域名列表','',function(_obj){
+            self.init();
+			// 查询按钮
+			$('#search_enom').unbind('click').click(function(){
+                self.init();
+			})
+			self.initData();
+		})
+	}
+    function showThridShop(link,id){
+        var self = this;
+        var _status = ['<a style="color:green">正常</a>','<a style="color:#ff650f">审核中</a>','<a style="color:red">满额</a>','<a style="color:red">审核不通过</a>'];
+        this.head = '<tr><td>id</td><td>商户名字</td><td>code</td><td>添加时间</td><td>状态</td><td colspan="2">操作</td></tr>';
+        this.body = '<tr data-idx="{_idx}" class="_list"><td>{id}</td><td class="search_shop_name" data-name="{pay_name}" data-code="{code}">{pay_name}</td><td>{code}</td><td>{code}</td><td class="status">{_status}</td><td><a class="ex_click_btn showDetail">查看</a></td><td class="operate">{operate}</td></tr>';
+        this.init = function(){
+            var bindEvent = function(obj){
+                // 查看按钮  查看详情
+                $('#dialog_thrid_shop .showDetail').unbind('click').click(function(){
+                    var id = $(this).parents('tr').data('idx');
+                    var data = obj.getDataById(id);
+                    var show = false;
+                    if(data.private_key == undefined || data.private_key == ''){
+						$('#keys .private').hide();
+					}else{
+                        show = true;
+                        $('#keys .private').show();
+					}
+                    if(data.public_key == undefined || data.public_key == ''){
+                        $('#keys .public').hide();
+                    }else{
+                        show = true;
+                        $('#keys .public').show();
+                    }
+                    if(data.other_key == undefined || data.other_key == ''){
+                        $('#keys .other').hide();
+                    }else{
+                        show = true;
+                        $('#keys .other').show();
+                    }
+                    if(show){
+                        $('#keys').show();
+					}else{
+                        $('#keys').hide();
+					}
+                    data['zhuangtai'] = (_status[data['status']] == undefined) ? _status[1]:_status[data['status']];
+                    outPutDOM($('#dialog_thrid_detail'),data,'post_');
+                    showDialog('dialog_thrid_detail','商户<b style="color:#f33">'+data.pay_name+'</b>详细信息');
+                })
+
+                // 审核通过
+                $('#dialog_thrid_shop .agree').unbind('click').click(function(){
+                    var _p = $(this).parents('tr');
+                    var id = _p.data('idx');
+                    var data = obj.getDataById(id);
+                    if(!data){
+                        toast('商户信息错误');return;
+                    }
+                    if(data['status'] == 0){
+                        toast('商户已经审核通过');return;
+                    }
+                    showLoading();
+                    AjaxPost('/api/setShopStatus',{shop_id:data.id,id:_user_id,code:data.code,status:0},function(o){
+                        _p.find('.status').html(_status[0]);
+                        _p.find('.operate').text("----");
+                    })
+                })
+
+                // 审核拒绝  需要填写拒绝理由
+                $('#dialog_thrid_shop .refuse').unbind('click').click(function(){
+                    var _p = $(this).parents('tr');
+                    var id = _p.data('idx');
+                    var data = obj.getDataById(id);
+                    if(!data){
+                        toast('商户信息错误');return;
+                    }
+                    if(data['status'] == 2){
+                        toast('商户已经拒绝');return;
+                    }
+                    showDialog('dialog_thrid_refuse','您正在拒绝商户<b style="color:red">'+data.pay_name+'</b>','',function(o){
+                        o.find('.sure').click(function(){
+                            var _reason = o.find('.reason').text();
+                            if(!_reason){
+                                toast("请输入拒绝理由");return;
+							}
+                            showLoading();
+                            AjaxPost('/api/setShopStatus',{shop_id:data.id,id:_user_id,code:data.code,status:3,reason:_reason},function(o){
+                                data.mark = _reason;
+                                _p.find('.status').html(_status[3]);
+                                _p.find('.operate').text("----");
+                                hideDialog('dialog_thrid_refuse');
+                            })
+						})
+					})
+                })
+
+            }
+            var prepareData = function(data){
+                for(var i in data){
+                    if(data[i]['status'] == 1){
+                        // 需要审核
+                        data[i]['operate'] = '<a class="ex_click_btn agree">通过</a><a class="ex_click_btn refuse">拒绝</a>';
+                    }else{
+                        data[i]['operate'] = '----';
+                    }
+                    data[i]['_status'] = _status[data[i]['status']] == undefined ? _status[1]:_status[data[i]['status']];
+                }
+                return data;
+            }
+            var _s = $('#select_thrid_shop').val();
+            var param = {id:id,status:_s};
+			param['search_name'] = $('#shop_code').val();
+            new pageTable($('#dialog_thrid_shop ._content'),'/api/shoplist',param,self.head,self.body,bindEvent,prepareData);
+        }
+        this.initData = function(){
+            $('#dialog_thrid_shop ._content .ex_custom_table').html('');
+            $('#dialog_thrid_shop ._content .pagination').remove();
+		};
+        showDialog(link,'第三方审核','',function(_obj){
+              self.init();
+            // 查询按钮
+			$('#search_thrid_shop').unbind('click').click(function(){
+                self.init();
+			})
+			this.initData();
+		})
+	}
+    $(function(){
+        getUserList();
+        // 点击事件
+		$('#search').click(function(){
+            getUserList();
+		})
+
+
+        $(document).on('dblclick','.userlist .left .user',function(){
+            var html = $(this).prop('outerHTML');
+            var id = $(this).data('id');
+            $('.userlist .right').append(html);
+            $(this).remove();
+        })
+        $(document).on('dblclick','.userlist .right .user',function(){
+            var html = $(this).prop('outerHTML');
+            $('.userlist .left').append(html);
+            $(this).remove();
+        })
+        // 全部
+        $('#all').click(function(){
+            if($(this).data('type') == 0){
+                $('.userlist .right').append($('.userlist .left').html());
+                $('.userlist .left').html('');
+                $(this).data('type',1)
+                $(this).text("取消")
+            }else{
+                $('.userlist .left').append($('.userlist .right').html());
+                $('.userlist .right').html('');
+                $(this).data('type',0)
+                $(this).text("全选")
+            }
+        })
+
+        // 新增业主
+		$('#add').click(function(){
+            showDialog('dialog_add_user','新增业主','',function(){
+                // 保存按钮
+				$('#save').unbind('click').click(function(){
+				    var callback = function(obj){
+                        hideDialog('dialog_add_user')
+                        getUserList();
+					}
+					quickSubmit($('#dialog_add_user'),"/user/add",'','post_',callback);
+				})
+			});
+		})
+		//平台维护--批量维护
+		$("#system_working").click(function () {
+            showDialog('dialog_system_working','平台维护','',function(){
+                var nowaday=new Date()
+                var time_setting_str='<div class="content sys_work_begin" style="margin-top: 5px;margin-left: 10px" >维护开始:' +
+									'<input type="number" max="9999" min="2018"  value="'+nowaday.getFullYear()+'" />年' +
+									'<input type="number" max="12" min="1" value="'+(nowaday.getMonth()+1)+'"  />月' +
+									' <input type="number" max="12" min="1" value="'+nowaday.getDate()+'"  />日'+
+									'<input type="number" max="23" min="0" value="'+nowaday.getHours()+'"  />时' +
+									'<input type="number" max="59" min="0"  value="'+nowaday.getMinutes()+'" />分' +
+									' <input type="number" max="59" min="0" value="'+nowaday.getSeconds()+'"  />秒</div>'
+               time_setting_str+='<div class="content sys_work_end" style="margin-top: 5px;margin-left: 10px" >维护结束:' +
+									'<input type="number" max="9999" min="2018"  value="'+nowaday.getFullYear()+'" />年' +
+									'<input type="number" max="12" min="1" value="'+(nowaday.getMonth()+1)+'"  />月' +
+									' <input type="number" max="12" min="1"  value="'+nowaday.getDate()+'"  />日'+
+									'<input type="number" max="23" min="0" value="'+(nowaday.getHours()+1)+'"  />时' +
+									'<input type="number" max="59" min="0"  value="'+0+'" />分' +
+									' <input type="number" max="59" min="0" value="'+0+'"  />秒</div>'
+                time_setting_str+='<div class="content" style="margin-top: 5px;margin-left: 10px">维护原因:<input id="reason"   type="text" required value="" /></div>' +
+					              '<div class="content" style="margin-top: 5px;margin-left: 10px"> tps:<input id="tips" type="text" value="" /></div>'
+
+                $('.content_sys_time_setting').html(time_setting_str)
+                // 保存按钮
+                $('._tools .ex_click_btn').unbind('click').click(function(){
+
+                  // var btime=(new Date($(".sys_work_begin input:nth-of-type(1)").val()+"-"+$(".sys_work_begin input:nth-of-type(2)").val()+"-"+$(".sys_work_begin input:nth-of-type(3)").val()+" "+$(".sys_work_begin input:nth-of-type(4)").val()+":"+$(".sys_work_begin input:nth-of-type(5)").val()+":"+$(".sys_work_begin input:nth-of-type(6)").val()).getTime())/1000
+					//var etime=(new Date($(".sys_work_end input:nth-of-type(1)").val()+"-"+$(".sys_work_end input:nth-of-type(2)").val()+"-"+$(".sys_work_end input:nth-of-type(3)").val()+" "+$(".sys_work_end input:nth-of-type(4)").val()+":"+$(".sys_work_end input:nth-of-type(5)").val()+":"+$(".sys_work_end input:nth-of-type(6)").val()).getTime())/1000
+
+
+                    var btime=$(".sys_work_begin input:nth-of-type(1)").val()+"年"+$(".sys_work_begin input:nth-of-type(2)").val()+"月"+$(".sys_work_begin input:nth-of-type(3)").val()+"日 "+$(".sys_work_begin input:nth-of-type(4)").val()+"时"+$(".sys_work_begin input:nth-of-type(5)").val()+"分"
+                   var etime=$(".sys_work_end input:nth-of-type(1)").val()+"年"+$(".sys_work_end input:nth-of-type(2)").val()+"月"+$(".sys_work_end input:nth-of-type(3)").val()+"日 "+$(".sys_work_end input:nth-of-type(4)").val()+"时"+$(".sys_work_end input:nth-of-type(5)").val()+"分"
+                    var reason=$("#reason").val()
+                    var tips=$("#tips").val()
+                    var userid='';
+                    $('.right .user').each(function(i,o){
+                        if(userid != ''){
+                            userid += '|'
+                        }
+                        userid += $(o).data('id')
+                    })
+                    var callback = function(obj){
+                        getUserList();
+                        if(obj.data== '' ){
+                            //全部设置成功
+							toast("全部设置成功")
+                            hideDialog('dialog_system_working')
+                        }else{
+                            //显示设置失败的
+
+                            outPutDOM($('#dialog_system_working_info'),'','post_');
+                            showDialog('dialog_system_working_info','设置返回信息','',function(){
+
+                                // 功能按钮
+                                var str='<tr><td class="left">编号</td><td>业主</td><td>状态</td><td>原因</td></tr>';
+                                for ( i in obj.data){
+                                    str+='<tr><td class="left">'+i+'</td><td>'+ obj.data[i].username+'</td><td>'+obj.data[i].status+'</td><td>'+ obj.data[i].param+'</td></tr>';
+                                }
+                                $("#dialog_info").html(str)
+                            });
+                        }
+
+                    }
+                    var status= $(this).attr('id') == 'edit_start'?0:1;
+                    AjaxPost("/api/setSysWorking",{gameid:1,idlist:userid,status:status,btime:btime,etime:etime,reason:reason,tips:tips},callback);
+                })
+            });
+        })
+
+
+
+
+
+	})
+    function convertDateFromString(dateString) {
+        if (dateString) {
+            var arr1 = dateString.split(" ");
+            var sdate = arr1[0].split('-');
+            var date = new Date(sdate[0], sdate[1]-1, sdate[2]);
+            return date;
+        }
+    }
+
+</script>

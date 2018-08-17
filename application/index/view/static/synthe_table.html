@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>综合报表</title>
+    <style>
+        *{padding:0; margin:0; font-family: Consolas, "Liberation Mono", Courier, "微软雅黑"; font-size:14px;}
+
+        .loss{font-weight: 900;font-size: 16px;}
+        .content { border-top: 1px Solid #eee; margin-top:20px;  }
+        .content .subcontent { padding: 20px; width:100%; height:auto; display:-webkit-flex; flex-flow:row wrap;-webkit-flex-flow:row wrap; box-sizing: border-box; border:1px Solid #EEEEEE; border-radius:20px; }
+        .content #text_content .time_type{text-decoration:underline}
+        .content #text_content .time_type:hover{cursor: pointer;color:#34aadc;}
+        .content #text_content .trad{text-decoration:underline}
+        .content #text_content .trad:hover{cursor:pointer;}
+        .ex_custom_table #text_content tr td{ text-align: left; display:inline-block; box-sizing: border-box; padding:0px 5px 0px 5px; border:none; cursor:pointer; color:#F11;}
+        .ex_custom_table #text_content tr td:hover{ text-shadow: #777 1px 0px 1px; }
+        .ex_custom_table #text_content tr td:nth-child(odd) { text-align: right; font-weight: bold; color:#1B3cF6; font-family: "Microsoft Yahei"; width:100px;}
+        .ex_custom_table #text_content tr td:nth-child(odd):hover{ text-shadow:none; }
+        .ex_custom_table #text_content tr{ background:#f3f3f3; }
+        .ex_custom_table #text_content tr:nth-child(odd){ background:#fffefe; }
+
+        .static_item { width:240px; height:100px; background: #F3F3F3; color:#666666; border-radius:10px; margin:5px; cursor:pointer; transition: all 0.3s linear; font-family: "Microsoft Yahei" }
+        .static_item:hover{ box-shadow: #CCCCCC 2px 2px 8px; transform: scale(1.05,1.05); }
+        .static_item .static_title { height:60px; line-height: 60px; text-align: center; font-size:1.2em; color:#FFFFFF; background:#1C6379; overflow: hidden; position: relative; box-shadow: #666666 0px 2px 10px; }
+        .static_item .static_title .static_mask { width:100%; height:60px; top:-60px;text-align: center; line-height: 60px; color:#FFFFFF; position:absolute;background: rgba(0,0,0,0.8); transition: all 0.3s ease-in-out; }
+        .static_item:hover .static_mask { top:0px; z-index:100; }
+        .static_item .static_value { height:40px; line-height: 40px; text-align: center; color:#666666; position:relative; overflow: hidden; }
+        .static_item .static_value .price { position:absolute; left:0px; top:0px; width:100%; text-align: center; background:#F3F3F3; border-radius:0px 0px 10px 10px;}
+        .static_item .static_value .people { position:absolute; left:0px; top:-40px; background:#AAFFCC; width:100%; transition: all 0.3s ease-in-out; border-radius:0px 0px 10px 10px; }
+        .static_item:hover .static_value .people { top: 0px; }
+        .type_title {box-sizing: border-box; border-left:4px Solid #1C6379; width:100%; height:30px; line-height: 30px; color:#1C6379; font-size:1.2em; font-weight: bold; padding-left:10px; margin:10px 0px 10px 0px; cursor: pointer; }
+        .type_title ._icon{ background:url('/static/img/select_arrow.png') CENTER CENTER NO-REPEAT; display:inline-block; vertical-align: middle; width:30px; height: 30px;}
+        .type_title.active ._icon { transform: rotate(-90deg); }
+        .type_title.active { color:#FF3333; }
+
+    </style>
+    <link rel="stylesheet" href="__PUBLIC__css/global.css" rel='stylesheet' type='text/css'>
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/bf.core.js"></script>
+    <script type="text/javascript" src="/static/js/hsy.core.js"></script>
+    <script type="text/javascript" src='/static/laydate/laydate.js'></script>
+
+</head>
+<body>
+{include file="public/tipshow"}
+<div class="search_box">
+    <div class="search_item">
+        业主:
+        <select class="ex_selector" id="user">
+            <option selected value="0">请选择业主</option>
+            {volist name="list" key="k" id="vo"}
+            <option value="{$vo.id}">{$vo.username}</option>
+            {/volist}
+        </select>
+    </div>
+    <div class="search_item">
+        <a class="ex_radiobox check_date checked" data-bdate="{:date('Y-m-d')}" data-edate="{:date('Y-m-d')}">今日</a>
+        <a class="ex_radiobox check_date" data-bdate="{:date('Y-m-d',strtotime('-1 days'))}" data-edate="{:date('Y-m-d', strtotime('-1 days'))}">昨日</a>
+        <a class="ex_radiobox check_date" data-bdate="{:date('Y-m-d',strtotime('-1 weeks'))}" data-edate="{:date('Y-m-d')}">一周</a>
+        <a class="ex_radiobox check_date" data-bdate="{:date('Y-m-d',strtotime('-1 month'))}" data-edate="{:date('Y-m-d')}" >一个月</a>
+        <a class="ex_radiobox check_date" data-bdate="{:date('Y-m-d',strtotime('-3 month'))}" data-edate="{:date('Y-m-d')}">三个月</a>
+        日期: <input class="ex_date_editor" id="search_date_begin" value="{:date('Y-m-d')}" type="text" readonly="readonly" /> - <input class="ex_date_editor" value="{:date('Y-m-d')}" id="search_date_end" type="text" readonly="readonly" value="" />
+        <span style="margin-left: 5px;">搜索账号：</span>
+        <input type="text" style="width:200px;" class="ex_search_box" id="search_username" value=""  placeholder=" 请输入用户账号.....">
+    </div>
+    <div class="search_item">
+        <div class="ex_btn_search" id="search">查询</div>
+    </div>
+</div>
+<div>
+    <div class="content" id="synthetable">
+        <div class="type_title" data-link="shujutongji">
+            数据统计 <div class="_icon"></div>
+        </div>
+        <div class="subcontent" id="shujutongji">
+            <div class="static_item" data-newtype="1">
+                <div class="static_title">
+                    <a class='tip_name'>周期盈利</a>
+                    <div class="static_mask">
+                        盈率: <a class="ex_win_sum_percent" data-type="money">0</a>%
+                    </div>
+                </div>
+                <div class="static_value"><a class="ex_win_sum" data-type="money">0</a>元</div>
+            </div>
+
+            <div class="static_item" data-newtype="1">
+                <div class="static_title">
+                    <a class='tip_name'>今日盈利</a>
+                    <div class="static_mask">
+                        盈率: <a class="ex_today_win_percent" data-type="money">0</a>%
+                    </div>
+                </div>
+                <div class="static_value"><a class="ex_today_win_sum" data-type="money">0</a>元</div>
+            </div>
+
+            <div class="static_item" data-newtype="1">
+                <div class="static_title">
+                    <a class='tip_name'>昨日盈利</a>
+                    <div class="static_mask">
+                        盈率: <a class="ex_yesterday_percent" data-type="money">0</a>%
+                    </div>
+                </div>
+                <div class="static_value"><a class="ex_yesterday_sum" data-type="money">0</a>元</div>
+            </div>
+
+            <div class="static_item" data-newtype="1">
+                <div class="static_title">
+                    <a class='tip_name'>本月盈利</a>
+                    <div class="static_mask">
+                        盈率: <a class="ex_month_win_percent" data-type="money">0</a>%
+                    </div>
+                </div>
+                <div class="static_value"><a class="ex_month_win_sum" data-type="money">0</a>元</div>
+            </div>
+
+            <div class="static_item" data-newtype="1">
+                <div class="static_title">
+                    <a class='tip_name'>上月盈利</a>
+                    <div class="static_mask">
+                        盈率: <a class="ex_last_month_win_percent" data-type="money">0</a>%
+                    </div>
+                </div>
+                <div class="static_value"><a class="ex_last_month_win_sum" data-type="money">0</a>元</div>
+            </div>
+
+
+        </div>
+        <div class="type_title" data-link="chongzhi">
+            充值类 <div class="_icon"></div>
+        </div>
+        <div class="subcontent" id="chongzhi">
+            <div class="static_item trad" data-newtype="1">
+                <div class="static_title">
+                    <a class='tip_name'>充值总额</a>
+                    <div class="static_mask">
+                        单数: <a class="ex_pay_count">0</a>笔
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_pay_sum" data-type="money">0</a>元</div>
+                    <div class="people"><a class="ex_people_pay">0</a>人</div>
+                </div>
+            </div>
+
+            <div class="static_item trad" data-newtype="2">
+                <div class="static_title">
+                    <a class='tip_name'>存款优惠</a>
+                    <div class="static_mask">
+                        单数: <a class="ex_pay_pay_odd_count">0</a>笔
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_pay_pay_odd" data-type="money">0</a>元</div>
+                    <div class="people"><a class="ex_people_pay_save">0</a>人</div>
+                </div>
+            </div>
+
+            <div class="static_item trad" data-newtype="3">
+                <div class="static_title">
+                    <a class='tip_name'>首存优惠</a>
+                    <div class="static_mask">
+                        单数: <a class="ex_pay_first_odd_count">0</a>笔
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_pay_first_odd" data-type="money">0</a>元</div>
+                    <div class="people"><a class="ex_people_pay_first_odd">0</a>人</div>
+                </div>
+            </div>
+
+            <div class="static_item trad" data-type="{:TTYPE_HM_PAY}" data-sub_type="{:TTYPE_HM_PAY_HM}">
+                <div class="static_title">
+                    <a class='tip_name'>人工入款</a>
+                    <div class="static_mask">
+                        单数: <a class="ex_hm_pay_count">0</a>笔
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_hm_pay_sum" data-type="money">0</a>元</div>
+                    <div class="people"><a class="ex_people_hm_pay">0</a>人</div>
+                </div>
+            </div>
+
+            <div class="static_item trad" data-type="{:TTYPE_GS_PAY}" data-sub_type="{:TTYPE_GS_PAY_BANK}">
+                <div class="static_title">
+                    <a class='tip_name'>银行卡转账</a>
+                    <div class="static_mask">
+                        单数: <a class="ex_pay_bank_count">0</a>笔
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_pay_bank_sum" data-type="money">0</a>元</div>
+                    <div class="people"><a class="ex_people_gs_pay_bank">0</a>人</div>
+                </div>
+            </div>
+
+            <div class="static_item trad" data-type="{:TTYPE_GS_PAY}" data-sub_type="{:TTYPE_GS_PAY_WEIXIN}">
+                <div class="static_title">
+                    <a class='tip_name'>微信转账</a>
+                    <div class="static_mask">
+                        单数: <a class="ex_pay_weixin_count">0</a>笔
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_pay_weixin_sum" data-type="money">0</a>元</div>
+                    <div class="people"><a class="ex_people_gs_pay_weixin">0</a>人</div>
+                </div>
+            </div>
+
+            <div class="static_item trad" data-type="{:TTYPE_GS_PAY}" data-sub_type="{:TTYPE_GS_PAY_QQ}">
+                <div class="static_title">
+                    <a class='tip_name'>QQ转账</a>
+                    <div class="static_mask">
+                        单数: <a class="ex_pay_qq_count">0</a>笔
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_pay_qq_sum" data-type="money">0</a>元</div>
+                    <div class="people"><a class="ex_people_gs_pay_qq">0</a>人</div>
+                </div>
+            </div>
+
+            <div class="static_item trad" data-type="{:TTYPE_GS_PAY}" data-sub_type="{:TTYPE_GS_PAY_ALIPAY}">
+                <div class="static_title">
+                    <a class='tip_name'>支付宝转账</a>
+                    <div class="static_mask">
+                        单数: <a class="ex_pay_alipay_count">0</a>笔
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_pay_alipay_sum" data-type="money">0</a>元</div>
+                    <div class="people"><a class="ex_people_gs_pay_alipay">0</a>人</div>
+                </div>
+            </div>
+
+            <div class="static_item trad" data-type="{:TTYPE_OL_PAY}" data-sub_type="{:TTYPE_OL_PAY_BANK}">
+                <div class="static_title">
+                    <a class='tip_name'>银联入款</a>
+                    <div class="static_mask">
+                        单数: <a class="ex_pay_ol_bank_count">0</a>笔
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_pay_ol_bank_sum" data-type="money">0</a>元</div>
+                    <div class="people"><a class="ex_people_ol_pay_bank">0</a>人</div>
+                </div>
+            </div>
+
+            <div class="static_item trad" data-type="{:TTYPE_OL_PAY}" data-sub_type="{:TTYPE_OL_PAY_WXQ}">
+                <div class="static_title">
+                    <a class='tip_name'>微信扫码</a>
+                    <div class="static_mask">
+                        单数: <a class="ex_pay_ol_weixin_qrcount">0</a>笔
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_pay_ol_weixin_qrsum" data-type="money">0</a>元</div>
+                    <div class="people"><a class="ex_people_ol_pay_weixin_qr">0</a>人</div>
+                </div>
+            </div>
+
+            <div class="static_item trad" data-type="{:TTYPE_OL_PAY}" data-sub_type="{:TTYPE_OL_PAY_WXA}">
+                <div class="static_title">
+                    <a class='tip_name'>微信WAP</a>
+                    <div class="static_mask">
+                        单数: <a class="ex_pay_ol_weixin_appcount">0</a>笔
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_pay_ol_weixin_appsum" data-type="money">0</a>元</div>
+                    <div class="people"><a class="ex_people_ol_pay_weixin_app">0</a>人</div>
+                </div>
+            </div>
+
+            <div class="static_item trad" data-type="{:TTYPE_OL_PAY}" data-sub_type="{:TTYPE_OL_PAY_ALIQ}">
+                <div class="static_title">
+                    <a class='tip_name'>支付宝扫码</a>
+                    <div class="static_mask">
+                        单数: <a class="ex_pay_ol_alipay_qrcount">0</a>笔
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_pay_ol_alipay_qrsum" data-type="money">0</a>元</div>
+                    <div class="people"><a class="ex_people_ol_pay_alipay_qr">0</a>人</div>
+                </div>
+            </div>
+
+            <div class="static_item trad" data-type="{:TTYPE_OL_PAY}" data-sub_type="{:TTYPE_OL_PAY_ALIA}">
+                <div class="static_title">
+                    <a class='tip_name'>支付宝WAP</a>
+                    <div class="static_mask">
+                        单数: <a class="ex_pay_ol_alipay_appcount">0</a>笔
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_pay_ol_alipay_appsum" data-type="money">0</a>元</div>
+                    <div class="people"><a class="ex_people_ol_pay_alipay_app">0</a>人</div>
+                </div>
+            </div>
+
+            <div class="static_item trad" data-type="{:TTYPE_OL_PAY}" data-sub_type="{:TTYPE_OL_PAY_QQ}">
+                <div class="static_title">
+                    <a class='tip_name'>QQ扫码</a>
+                    <div class="static_mask">
+                        单数: <a class="ex_pay_ol_qq_qrcount">0</a>笔
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_pay_ol_qq_qrsum" data-type="money">0</a>元</div>
+                    <div class="people"><a class="ex_people_ol_pay_qq_qr">0</a>人</div>
+                </div>
+            </div>
+
+            <div class="static_item trad" data-type="{:TTYPE_OL_PAY}" data-sub_type="{:TTYPE_OL_PAY_QQ_WAP}">
+                <div class="static_title">
+                    <a class='tip_name'>QQ钱包WAP</a>
+                    <div class="static_mask">
+                        单数: <a class="ex_pay_ol_qq_app_count">0</a>笔
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_pay_ol_qq_app_sum" data-type="money">0</a>元</div>
+                    <div class="people"><a class="ex_people_ol_pay_qq_app">0</a>人</div>
+                </div>
+            </div>
+
+            <div class="static_item trad" data-type="{:TTYPE_OL_PAY}" data-sub_type="{:TTYPE_OL_PAY_QUICK}">
+                <div class="static_title">
+                    <a class='tip_name'>快捷支付</a>
+                    <div class="static_mask">
+                        单数: <a class="ex_pay_ol_quick_count">0</a>笔
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_pay_ol_quick_sum" data-type="money">0</a>元</div>
+                    <div class="people"><a class="ex_people_ol_pay_quick">0</a>人</div>
+                </div>
+            </div>
+
+            <div class="static_item firstTable" data-newtype="5">
+                <div class="static_title">
+                    <a class='tip_name'>首充金额</a>
+                    <div class="static_mask">
+                        单数: <a class="ex_pay_first_count">0</a>笔
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_pay_first_sum" data-type="money">0</a>元</div>
+                    <div class="people"><a class="ex_people_pay_first">0</a>人</div>
+                </div>
+            </div>
+        </div>
+        <div class="type_title" data-link="tikuan">
+            提款类 <div class="_icon"></div>
+        </div>
+        <div class="subcontent" id="tikuan">
+            <div class="static_item trad" data-type="{:TTYPE_TK_OK}">
+                <div class="static_title">
+                    <a class='tip_name'>总提款金额</a>
+                    <div class="static_mask">
+                        单数:<a class="ex_get_count">0</a>笔
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_get_sum" data-type="money">0</a>元</div>
+                    <div class="people"><a class="ex_people_get">0</a>人</div>
+                </div>
+            </div>
+
+            <div class="static_item trad" data-type="{:TTYPE_TK_OK}" data-sub_type="{:TTYPE_TK_OK_OL}">
+                <div class="static_title">
+                    <a class='tip_name'>线上提出</a>
+                    <div class="static_mask">
+                        单数:<a class="ex_get_ol_count">0</a>笔
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_get_ol_sum" data-type="money">0</a>元</div>
+                    <div class="people"><a class="ex_people_get_ol">0</a>人</div>
+                </div>
+            </div>
+
+            <div class="static_item trad" data-type="{:TTYPE_TK_OK}" data-sub_type="{:TTYPE_TK_OK_HM}">
+                <div class="static_title">
+                    <a class='tip_name'>人工提出</a>
+                    <div class="static_mask">
+                        单数:<a class="ex_get_hm_count">0</a>笔
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_get_hm_sum" data-type="money">0</a>元</div>
+                    <div class="people"><a class="ex_people_get_hm">0</a>人</div>
+                </div>
+            </div>
+
+            <div class="static_item trad" data-type="{:TTYPE_TK_RET}" data-sub_type="{:TTYPE_TK_RET_TK}">
+                <div class="static_title">
+                    <a class='tip_name'>提款退还</a>
+                    <div class="static_mask">
+                        单数:<a class="ex_tk_ret_count">0</a>笔
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_tk_ret_sum" data-type="money">0</a>元</div>
+                    <div class="people"><a class="ex_people_get_ret">0</a>人</div>
+                </div>
+            </div>
+        </div>
+        <div class="type_title" data-link="touzhu">
+            投注类 <div class="_icon"></div>
+        </div>
+        <div class="subcontent" id="touzhu">
+            <div class="static_item trad" data-type="{:TTYPE_TZ_OK}" data-sub_type="{:TTYPE_TZ_OK_1}">
+                <div class="static_title">
+                    <a class='tip_name'>投注总额</a>
+                    <div class="static_mask">
+                        单数:<a class="ex_touzhu_price_count">0</a>笔
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_touzhu_price_sum" data-type="money">0</a>元</div>
+                    <div class="people"><a class="ex_people_touzhu">0</a>人</div>
+                </div>
+            </div>
+
+            <div class="static_item trad" data-type="{:TTYPE_TZ_RET}" data-sub_type="{:TTYPE_TZ_RET_TZ}">
+                <div class="static_title">
+                    <a class='tip_name'>撤单总额</a>
+                    <div class="static_mask">
+                        单数:<a class="ex_tz_ret_count">0</a>笔
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_tz_ret_sum" data-type="money">0</a>元</div>
+                    <div class="people"><a class="ex_people_touzhu_ret">0</a>人</div>
+                </div>
+            </div>
+
+            <div class="static_item">
+                <div class="static_title">
+                    <a class='tip_name'>有效投注</a>
+                    <div class="static_mask">
+                        单数:<a class="ex_tz_usefull_count">0</a>笔
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_tz_usefull_sum" data-type="money">0</a>元</div>
+                </div>
+            </div>
+
+            <div class="static_item trad" data-type="{:TTYPE_TZ_WIN}" data-sub_type="{:TTYPE_TZ_WIN_WIN}">
+                <div class="static_title">
+                    <a class='tip_name'>中奖总额</a>
+                    <div class="static_mask">
+                        单数:<a class="ex_win_price_count">0</a>笔
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_win_price_sum" data-type="money">0</a>元</div>
+                    <div class="people"><a class="ex_people_win">0</a>人</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="type_title" data-link="huodong">
+            活动类 <div class="_icon"></div>
+        </div>
+        <div class="subcontent" id="huodong">
+            <div class="static_item trad" data-type="{:TTYPE_EV_ODD}" data-sub_type="-1">
+                <div class="static_title">
+                    <a class='tip_name'>总活动礼金</a>
+                    <div class="static_mask">
+                        单数:<a class="ex_event_odd_count">0</a>笔
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_event_odd_sum" data-type="money">0</a>元</div>
+                    <div class="people"><a class="ex_people_ev_all">0</a>人</div>
+                </div>
+            </div>
+            <div class="static_item trad" data-type="{:TTYPE_EV_ODD}" data-sub_type="{:TTYPE_EV_ODD_REG}">
+                <div class="static_title">
+                    <a class='tip_name'>注册活动</a>
+                    <div class="static_mask">
+                        单数:<a class="ex_ev_odd_reg_count">0</a>笔
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_ev_odd_reg_sum" data-type="money">0</a>元</div>
+                    <div class="people"><a class="ex_people_ev_reg">0</a>人</div>
+                </div>
+            </div>
+            <div class="static_item trad" data-type="{:TTYPE_EV_ODD}" data-sub_type="{:TTYPE_EV_ODD_TZ}">
+                <div class="static_title">
+                    <a class='tip_name'>投注活动</a>
+                    <div class="static_mask">
+                        单数:<a class="ex_ev_odd_tz_count">0</a>笔
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_ev_odd_tz_sum" data-type="money">0</a>元</div>
+                    <div class="people"><a class="ex_people_ev_tz">0</a>人</div>
+                </div>
+            </div>
+            <div class="static_item trad" data-type="{:TTYPE_EV_ODD}" data-sub_type="{:TTYPE_EV_ODD_TG}">
+                <div class="static_title">
+                    <a class='tip_name'>推广活动</a>
+                    <div class="static_mask">
+                        单数:<a class="ex_ev_odd_tg_count">0</a>笔
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_ev_odd_tg_sum" data-type="money">0</a>元</div>
+                    <div class="people"><a class="ex_people_ev_tg">0</a>人</div>
+                </div>
+            </div>
+            <div class="static_item trad" data-type="{:TTYPE_EV_ODD}" data-sub_type="{:TTYPE_EV_ODD_PAY}">
+                <div class="static_title">
+                    <a class='tip_name'>充值活动</a>
+                    <div class="static_mask">
+                        单数:<a class="ex_ev_odd_pay_count">0</a>笔
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_ev_odd_pay_sum" data-type="money">0</a>元</div>
+                    <div class="people"><a class="ex_people_ev_pay">0</a>人</div>
+                </div>
+            </div>
+            <div class="static_item trad" data-type="{:TTYPE_EV_ODD}" data-sub_type="{:TTYPE_EV_ODD_BAG}">
+                <div class="static_title">
+                    <a class='tip_name'>红包活动</a>
+                    <div class="static_mask">
+                        单数:<a class="ex_ev_odd_bag_count">0</a>笔
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_ev_odd_bag_sum" data-type="money">0</a>元</div>
+                    <div class="people"><a class="ex_people_ev_bag">0</a>人</div>
+                </div>
+            </div>
+            <div class="static_item trad" data-type="{:TTYPE_EV_ODD}" data-sub_type="{:TTYPE_EV_ODD_SIGN}">
+                <div class="static_title">
+                    <a class='tip_name'>签到活动</a>
+                    <div class="static_mask">
+                        单数:<a class="ex_ev_odd_sign_count">0</a>笔
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_ev_odd_sign_sum" data-type="money">0</a>元</div>
+                    <div class="people"><a class="ex_people_ev_sign">0</a>人</div>
+                </div>
+            </div>
+            <div class="static_item trad" data-type="{:TTYPE_EV_ODD}" data-sub_type="{:TTYPE_EV_ODD_RISE}">
+                <div class="static_title">
+                    <a class='tip_name'>晋级活动</a>
+                    <div class="static_mask">
+                        单数:<a class="ex_ev_odd_rise_count">0</a>笔
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_ev_odd_rise_sum" data-type="money">0</a>元</div>
+                    <div class="people"><a class="ex_people_ev_rise">0</a>人</div>
+                </div>
+            </div>
+            <div class="static_item trad" data-type="{:TTYPE_EV_ODD}" data-sub_type="{:TTYPE_EV_ODD_OTHER}">
+                <div class="static_title">
+                    <a class='tip_name'>其他活动</a>
+                    <div class="static_mask">
+                        单数:<a class="ex_ev_odd_other_count">0</a>笔
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_ev_odd_other_sum" data-type="money">0</a>元</div>
+                    <div class="people"><a class="ex_people_ev_other">0</a>人</div>
+                </div>
+            </div>
+        </div>
+        <div class="type_title" data-link="tuiguang">
+            推广类 <div class="_icon"></div>
+        </div>
+        <div class="subcontent" id="tuiguang">
+            <div class="static_item user_skl" data-reg="1">
+                <div class="static_title">
+                    <a class='tip_name'>在线人数</a>
+                    <div class="static_mask">
+                        点击查看详情
+                    </div>
+                </div>
+                <div class="static_value"><a class="ex_user_online">0</a>人</div>
+            </div>
+            <div class="static_item trad" data-type="{:TTYPE_DL_GAN}" data-sub_type="{:TTYPE_DL_GAN_DL}">
+                <div class="static_title">
+                    <a class='tip_name'>代理返点</a>
+                    <div class="static_mask">
+                        单数: <a class="ex_daili_gain_count">0</a>笔
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_daili_gain_sum" data-type="money">0</a>元</div>
+                    <div class="people"><a class="ex_people_fandian">0</a>人</div>
+                </div>
+            </div>
+            <div class="static_item" data-newtype="1">
+                <div class="static_title">
+                    <a class='tip_name'>首充人数</a>
+                    <div class="static_mask">
+                        点击查看详情
+                    </div>
+                </div>
+                <div class="static_value"><a class="ex_people_pay_first">0</a>人</div>
+            </div>
+            <div class="static_item" data-newtype="1">
+                <div class="static_title">
+                    <a class='tip_name'>线下人数</a>
+                    <div class="static_mask">
+                        点击查看详情
+                    </div>
+                </div>
+                <div class="static_value"><a class="ex_all_user_count">0</a>人</div>
+            </div>
+            <div class="static_item" data-newtype="1">
+                <div class="static_title">
+                    <a class='tip_name'>注册人数</a>
+                    <div class="static_mask">
+                        点击查看详情
+                    </div>
+                </div>
+                <div class="static_value"><a class="ex_all_reg_user_count">0</a>人</div>
+            </div>
+        </div>
+        <div class="type_title" data-link="qita">
+            其他类 <div class="_icon"></div>
+        </div>
+        <div class="subcontent" id="qita">
+            <div class="static_item trad" data-type="{:TTYPE_MONEY_TRAD}" data-sub_type="{:TTYPE_MONEY_TRAD_PAY}">
+                <div class="static_title">
+                    <a class='tip_name'>现金转出</a>
+                    <div class="static_mask">
+                        笔数: <a class="ex_trad_money_pay_count">0</a>笔
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_trad_money_pay_sum" data-type="money">0</a>元</div>
+                    <div class="people"><a class="ex_people_trad_pay">0</a>人</div>
+                </div>
+            </div>
+            <div class="static_item trad" data-type="{:TTYPE_MONEY_TRAD}" data-sub_type="{:TTYPE_MONEY_TRAD_GET}">
+                <div class="static_title">
+                    <a class='tip_name'>现金转入</a>
+                    <div class="static_mask">
+                        笔数: <a class="ex_trad_money_get_count">0</a>笔
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_trad_money_get_sum" data-type="money">0</a>元</div>
+                    <div class="people"><a class="ex_people_trad_get">0</a>人</div>
+                </div>
+            </div>
+            <div class="static_item user_reg" data-type="52" data-sub_type="1">
+                <div class="static_title">
+                    <a class='tip_name'>会员总余额</a>
+                    <div class="static_mask">
+                        人数: <a class="ex_all_user_count">0</a>人
+                    </div>
+                </div>
+                <div class="static_value">
+                    <div class="price"><a class="ex_all_user_price" data-type="money">0</a>元</div>
+                </div>
+            </div>
+
+        </div>
+        <div style="color:red;font-size: 13px;margin-top: 10px;">※注：盈利 = 投注总额-撤单总额-中奖金额-活动礼金-代理返点</div>
+        <div style="color:red;font-size: 13px;margin-top: 10px;">※注：盈率 = 盈利 / 有效投注 * 100%</div>
+    </div>
+</div>
+</body>
+</html>
+<script>
+    function getSyntheTable(){
+        var uid = $('#user').val();
+        var btime = $('#search_date_begin').val();
+        var etime = $('#search_date_end').val();
+        var username = $('#search_username').val();
+
+        if(!uid || uid < 1){
+            toast('请选择业主');return;
+        }
+        var param = {};
+        param['id'] = uid;
+        param['btime'] = btime;
+        param['etime'] = etime;
+        param['username'] = username;
+        showLoading();
+        AjaxPost('/api/gameSyntheTable',param,function(obj){
+            outPutDOM($(".content"), obj.data,".ex_");
+            // 充值笔数累计
+            var pay_count = 0;
+            var pay_price = 0;
+            $('#chongzhi .static_item').each(function(i,obj){
+                var count_obj = $(obj).find('.static_value .price a');
+                if(count_obj.hasClass('ex_pay_count') === false && count_obj.hasClass('ex_pay_pay_odd_count') === false && count_obj.hasClass('ex_pay_first_odd_count') === false && false === count_obj.hasClass('ex_pay_first_count')){
+                    pay_count += parseInt($(obj).find('.static_mask a').text()); // 总笔数
+                }
+                var price_obj = $(obj).find('.static_value .price a');
+                if(price_obj.hasClass('ex_pay_sum') === false && price_obj.hasClass('ex_pay_pay_odd') === false && price_obj.hasClass('ex_pay_first_odd') === false && false === price_obj.hasClass('ex_pay_first_sum')){
+                    pay_price += parseFloat(price_obj.text()); // 总笔数
+                }
+            })
+            $('#chongzhi .static_mask a.ex_pay_count').text(pay_count);
+            $('#chongzhi .static_value .price a.ex_pay_sum').text(_parseFloat(pay_price,2));
+
+            // 活动笔数累计
+            var pay_count = 0;
+            var pay_price = 0;
+            $('#huodong .static_item').each(function(i,obj){
+                if(!$(obj).find('.static_mask a').hasClass('ex_event_odd_count')){
+                    pay_count += parseInt($(obj).find('.static_mask a').text()); // 总笔数
+                }
+                if(!$(obj).find('.static_value .price a').hasClass('ex_event_odd_sum')){
+                    pay_price += parseFloat($(obj).find('.static_value .price a').text()); // 总笔数
+                }
+            })
+            $('#huodong .static_mask a.ex_event_odd_count').text(pay_count);
+            $('#huodong .static_value .price a.ex_event_odd_sum').text(_parseFloat(pay_price,2));
+
+            // 提款退换 笔数跟金额
+            var pay_count = 0;
+            var pay_price = 0;
+            $('#tikuan .static_item').each(function(i,obj){
+                if(!$(obj).find('.static_mask a').hasClass('ex_get_count')){
+                    pay_count += parseInt($(obj).find('.static_mask a').text()); // 总笔数
+                }
+                if(!$(obj).find('.static_value .price a').hasClass('ex_get_sum') && !$(obj).find('.static_value .price a').hasClass('ex_tk_ret_sum')){
+                    pay_price += parseFloat($(obj).find('.static_value .price a').text()); // 总笔数
+                }
+            })
+            $('#tikuan .static_mask a.ex_get_count').text(pay_count);
+            $('#tikuan .static_value .price a.ex_get_sum').text(_parseFloat(pay_price,2));
+        })
+    }
+    $(function(){
+        laydate({elem: '#search_date_begin'});
+        laydate({elem: '#search_date_end'});
+        $('#search').click(function () {
+            getSyntheTable();
+        })
+
+        // 切换日期
+        $('.check_date').click(function(){
+            var bdate = $(this).data("bdate");
+            var edate = $(this).data("edate");
+            $("#search_date_begin").val(bdate);
+            $("#search_date_end").val(edate);
+        })
+        // 显示隐藏
+        $(".type_title").click(function(){
+            if ($(this).hasClass("active")) {
+                $(this).removeClass("active");
+                $("#"+$(this).data("link")).slideDown(200);
+            }else{
+                $(this).addClass("active");
+                $("#"+$(this).data("link")).slideUp(200);
+            }
+        })
+    })
+</script>

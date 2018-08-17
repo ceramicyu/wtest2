@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv=X-UA-Compatible content="IE=edge,chorme=1">
+    <meta charset="UTF-8">
+    <title>登录日志</title>
+    <style>
+        *{ margin:0px; padding:0px; }
+    </style>
+    <link rel="stylesheet" href="__PUBLIC__css/global.css" rel='stylesheet' type='text/css'>
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/bf.core.js"></script>
+    <script type="text/javascript" src="/static/js/hsy.core.js"></script>
+    <script type="text/javascript" src='/static/laydate/laydate.js'></script>
+    <script src="/static/js/page.js"></script>
+    <script>
+        //整型解析为IP地址
+        function _int2iP(num)
+        {
+            var str;
+            var tt = new Array();
+            tt[0] = (num >>> 24) >>> 0;
+            tt[1] = ((num << 8) >>> 24) >>> 0;
+            tt[2] = (num << 16) >>> 24;
+            tt[3] = (num << 24) >>> 24;
+            str = String(tt[0]) + "." + String(tt[1]) + "." + String(tt[2]) + "." + String(tt[3]);
+            return str;
+        }
+        function getDataList(param){
+            if(param==null){
+                var param = {};
+            }else{
+                var param = param;
+            }
+
+            var head = '<tr><th>ID</th><th>管理员名称</th><th>登录时间</th><th>登录ip地址</th><th>操作</th></tr>';
+            var body ='<tr><td>{id}</td><td>{username}</td><td>{create_time}</td><td>{ip}</td><td>{detail}</td></tr>';;
+            var _date=new Date();
+            var prepData = function(data){
+                for(var i in data){
+                    data[i]['create_time'] =_date._format('{y}-{m}-{d} {h}:{i}:{s}',data[i]['create_time']);
+                    data[i]['ip']=_int2iP( data[i]['ip']);
+                    data[i]['detail']=data[i]['detail']
+                }
+                return data;
+            }
+            var bindEvent = function(_obj){
+            }
+            new pageTable($('#datalist'),'/log/loginLog/',param,head,body,bindEvent,prepData,25);
+        }
+
+
+        $(function(){
+            getDataList();
+            //laydate
+            laydate({elem: '#search_date_begin'});
+            laydate({elem: '#search_date_end'});
+            //查询
+            $('#search').click(function (){
+                var username=_username.value;
+                var begin_time=search_date_begin.value;
+                var end_time=search_date_end.value;
+                var param={username:username,begin_time:begin_time,end_time:end_time};
+                getDataList(param);
+            })
+
+
+
+        })
+
+
+
+    </script>
+</head>
+<body>
+
+
+{include file="public/tipshow"}
+<div class="search_box">
+    <div class="search_item">
+        管理员：<input id="_username" type="text" value="">
+        日期: <input class="ex_date_editor" id="search_date_begin" value="{:date('Y-m-d')}" type="text" readonly="readonly" /> - <input class="ex_date_editor" value="{:date('Y-m-d')}" id="search_date_end" type="text" readonly="readonly" value="" />
+    </div>
+    <div class="search_item">
+        <div class="ex_btn_search" id="search">查询</div>
+    </div>
+
+</div>
+<div id="datalist">
+    <table class="ex_custom_table">
+        <thead>
+        <tr><th>ID</th><th>管理员名称</th><th>登录时间</th><th>登录ip地址</th><th>操作时间</th></tr>
+        </thead>
+        <tbody>
+
+
+        <tr><td colspan="100%">没有数据</td></tr>
+
+        </tbody>
+    </table>
+</div>
+<!-- 添加对话框 -->
+
+</body>
+</html>

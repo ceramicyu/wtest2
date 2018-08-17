@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv=X-UA-Compatible content="IE=edge,chorme=1">
+    <title>彩种管理</title>
+    <style>
+        *{ margin:0px; padding:0px; }
+        #datalist{padding-top:50px}
+        #datalist .ex_radiobox{ margin:0 3px; margin-bottom:5px;}
+    </style>
+    <link rel="stylesheet" href="__PUBLIC__css/global.css" rel='stylesheet' type='text/css'>
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/bf.core.js"></script>
+    <script type="text/javascript" src="/static/js/hsy.core.js"></script>
+    <script src="/static/js/page.js"></script>
+    <script>
+        var gamelist = {$gamelist};
+        function initGamelist(list){
+            $('#datalist').html("暂时没有游戏");
+            if(empty(list)){
+                return;
+            }
+            $('#datalist').html("");
+            var listTpl = '<div class="ex_radiobox" data-id="{game_id}"  data-js_tag="{js_tag}"  data-tag="{tag}">{game_name}</div>'; // 列表的模板
+            for(var i in list){
+                var o = list[i];
+                if(o.enable != 1){
+                    continue;
+                }
+                $('#datalist').append(listTpl.format(o));
+            }
+            // 绑定事件
+            $('#reopen').unbind('click').click(function(){
+                var param = {};
+                // var userid = $('#user').val();
+                // if(!userid || userid < 1){
+                //     toast('请选择业主');return;
+                // }
+                /* 选择业主 start */
+                var u = '';
+                if($('.userlist .right .user').length <= 0){
+                    toast("请选择业主");return;
+                }
+                $('.userlist .right .user').each(function(i,obj){
+                    var id = $(obj).data('id');
+                    if(id != undefined && id > 1){
+                        if(u != ''){
+                            u += '|';
+                        }
+                        u += id+"";
+                    }
+                })
+                /* 选择业主 end */
+                param['idlist'] = u;
+                var date = $('#date').val();
+                if(!date){
+                    toast('请选择日期');return;
+                }
+                param['date'] = date;
+                var game_id = $('#datalist').find('.ex_radiobox.checked').data('id');
+                if(!game_id){
+                    toast("请选择游戏");return;
+                }
+                param['game_id'] = game_id;
+                showLoading();
+                AjaxPost('/api/reopenLottery',param,function(){
+                    toast("补开成功");return;
+                })
+            })
+        }
+
+        $(function(){
+            initGamelist(gamelist);
+        })
+
+    </script>
+</head>
+<body>
+
+{include file="public/tipshow"}
+
+<div id="datalist">
+    <div class="ex_radiobox">游戏1</div><div class="ex_radiobox">游戏1</div><div class="ex_radiobox">游戏1</div>
+</div>
+<div class="search_box">
+    <div class="search_item">日期：
+        <input type="date" id="date">
+    </div>
+    <div class="search_item">期数：
+        <input type="text" id="qishu" class="ex_editor_box" placeholder="默认补开所有遗漏期数">
+    </div>
+    <div class="search_item">
+        <div class="ex_btn_search" id="reopen">遗漏补开</div>
+    </div>
+</div>
+<style>
+    .search_box{width:600px; margin:0 auto}
+    .userlist {border:1px solid #ccc; padding:2px 0; height:300px; overflow-y:auto  }
+    .userlist .user{text-align:center; cursor:default; padding:2px 0}
+    .userlist .user:hover{background:#ccc}
+    .clearFloat{clear:both}
+    .search_box .left{width:50%;border-right:1px solid #ccc; box-sizing: content-box; float: left;height:100%;overflow-y:auto  }
+    .search_box .right{width:49%;box-sizing: content-box; float: left;height:100%;overflow-y:auto  }
+</style>
+
+    <div class="search_box">
+        业主 ： <div class="ex_click_btn" id="all" data-type="0">全选</div>
+        <span>双击选择</span>
+    </div>
+    <div class="search_box userlist">
+
+        <div class="left">
+
+            {volist name="userlist" id="vo"}
+            <div class="user" data-id="{$vo.id}" >{$vo.username}(<a href="{$vo.index_url}">{$vo.index_url}</a>)</div>
+            {/volist}
+        </div>
+        <div class="right">
+        </div>
+        <div class="clearFloat"></div>
+    </div>
+
+
+<script>
+
+
+    $(function(){
+
+        $(document).on('dblclick','.userlist .left .user',function(){
+            var html = $(this).prop('outerHTML');
+            var id = $(this).data('id');
+            $('.userlist .right').append(html);
+            $(this).remove();
+        })
+        $(document).on('dblclick','.userlist .right .user',function(){
+            var html = $(this).prop('outerHTML');
+            $('.userlist .left').append(html);
+            $(this).remove();
+        })
+        // 全部
+        $('#all').click(function(){
+            if($(this).data('type') == 0){
+                $('.userlist .right').append($('.userlist .left').html());
+                $('.userlist .left').html('');
+                $(this).data('type',1)
+                $(this).text("取消")
+            }else{
+                $('.userlist .left').append($('.userlist .right').html());
+                $('.userlist .right').html('');
+                $(this).data('type',0)
+                $(this).text("全选")
+            }
+        })
+    })
+</script>
+</html>
